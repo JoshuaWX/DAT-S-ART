@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dat's Art - Bringing Technology into Art</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-animation">
+            <canvas id="loading-canvas"></canvas>
+            <div class="loading-text">
+                <span class="glitch" data-text="DAT'S ART">DAT'S ART</span>
+                <p>Initializing Creative Matrix...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="glitch-logo" data-text="DAT'S ART">DAT'S ART</span>
+                <span class="motto">BRINGING TECHNOLOGY INTO ART</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                <li><a href="#tech" class="nav-link">Tech</a></li>
+                <li><a href="#instagram" class="nav-link">Instagram</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-bg">
+            <canvas id="hero-canvas"></canvas>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="line-1">WHERE CODE</span>
+                    <span class="line-2">MEETS</span>
+                    <span class="line-3 gradient-text">CREATIVITY</span>
+                </h1>
+                <p class="hero-subtitle">Art reimagined through technology, pixels painted with passion</p>
+                <div class="hero-cta">
+                    <button class="cta-button primary" onclick="scrollToSection('gallery')">
+                        <span>Explore Gallery</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="cta-button secondary" onclick="scrollToSection('about')">
+                        <span>Our Story</span>
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-elements">
+                    <div class="float-item code-block">&lt;art/&gt;</div>
+                    <div class="float-item pixel-art">■</div>
+                    <div class="float-item binary">01101</div>
+                    <div class="float-item brush">🎨</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+            <span>Scroll to explore</span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">From Brushes to Binary</h2>
+                <p class="section-subtitle">Our journey into the fusion of art and technology</p>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <div class="story-block">
+                        <h3>What Does "Bringing Tech into Art" Mean?</h3>
+                        <p>It means breaking boundaries. It's about using algorithms as brushes, code as canvas, and data as pigment. We create art that doesn't just exist in the physical world but lives, breathes, and evolves in the digital realm.</p>
+                    </div>
+                    <div class="story-block">
+                        <h3>Our Creative Process</h3>
+                        <p>From AI-generated concepts to interactive web experiences, we blend traditional artistic vision with cutting-edge technology. Every piece tells a story through pixels, vectors, and interactive elements.</p>
+                    </div>
+                    <div class="story-block">
+                        <h3>The Vision</h3>
+                        <p>To inspire a new generation of artists who see technology not as a replacement for creativity, but as an amplifier of human imagination.</p>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="morphing-shape" id="morphing-shape"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Digital Masterpieces</h2>
+                <p class="section-subtitle">Where imagination meets implementation</p>
+            </div>
+            <div class="gallery-filter">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="generative">Generative</button>
+                <button class="filter-btn" data-filter="interactive">Interactive</button>
+                <button class="filter-btn" data-filter="ai">AI Art</button>
+                <button class="filter-btn" data-filter="web">Web Art</button>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item" data-category="generative">
+                    <div class="item-image">
+                        <canvas class="art-canvas" data-art="fractal"></canvas>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Fractal Dreams</h3>
+                        <p>Generative Art</p>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="interactive">
+                    <div class="item-image">
+                        <canvas class="art-canvas" data-art="particles"></canvas>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Interactive Particles</h3>
+                        <p>Web Experience</p>
+                        <button class="view-btn">Interact</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="ai">
+                    <div class="item-image">
+                        <div class="placeholder-art ai-art">AI Generated</div>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Neural Landscapes</h3>
+                        <p>AI Collaboration</p>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="web">
+                    <div class="item-image">
+                        <canvas class="art-canvas" data-art="waves"></canvas>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Digital Waves</h3>
+                        <p>CSS Animation</p>
+                        <button class="view-btn">Experience</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="generative">
+                    <div class="item-image">
+                        <canvas class="art-canvas" data-art="noise"></canvas>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Perlin Noise Art</h3>
+                        <p>Algorithm Art</p>
+                        <button class="view-btn">View Details</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="interactive">
+                    <div class="item-image">
+                        <canvas class="art-canvas" data-art="mandala"></canvas>
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Digital Mandala</h3>
+                        <p>Interactive Pattern</p>
+                        <button class="view-btn">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Section -->
+    <section id="tech" class="tech">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">The Tech Behind the Art</h2>
+                <p class="section-subtitle">Tools that power our creative vision</p>
+            </div>
+            <div class="tech-categories">
+                <div class="tech-category">
+                    <div class="category-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI & Machine Learning</h3>
+                    <ul class="tech-list">
+                        <li>DALL·E & MidJourney</li>
+                        <li>Stable Diffusion</li>
+                        <li>GPT for Creative Writing</li>
+                        <li>TensorFlow.js</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <div class="category-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>Web Technologies</h3>
+                    <ul class="tech-list">
+                        <li>HTML5 Canvas & WebGL</li>
+                        <li>Three.js & P5.js</li>
+                        <li>CSS3 Animations</li>
+                        <li>JavaScript ES6+</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <div class="category-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3>Creative Tools</h3>
+                    <ul class="tech-list">
+                        <li>Blender 3D</li>
+                        <li>Adobe Creative Suite</li>
+                        <li>Processing</li>
+                        <li>Figma for UI/UX</li>
+                    </ul>
+                </div>
+                <div class="tech-category">
+                    <div class="category-icon">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>Programming</h3>
+                    <ul class="tech-list">
+                        <li>Python for Data Art</li>
+                        <li>Node.js Backend</li>
+                        <li>WebGL Shaders</li>
+                        <li>APIs Integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Instagram Section -->
+    <section id="instagram" class="instagram">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Follow Our Creative Chaos</h2>
+                <p class="section-subtitle">@dat_sart on Instagram 🎨⚡</p>
+            </div>
+            <div class="instagram-content">
+                <div class="instagram-feed">
+                    <div class="instagram-post">
+                        <div class="post-image">
+                            <canvas class="feed-canvas" data-art="spiral"></canvas>
+                        </div>
+                        <div class="post-overlay">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                    </div>
+                    <div class="instagram-post">
+                        <div class="post-image">
+                            <canvas class="feed-canvas" data-art="grid"></canvas>
+                        </div>
+                        <div class="post-overlay">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                    </div>
+                    <div class="instagram-post">
+                        <div class="post-image">
+                            <canvas class="feed-canvas" data-art="bloom"></canvas>
+                        </div>
+                        <div class="post-overlay">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                    </div>
+                    <div class="instagram-post">
+                        <div class="post-image">
+                            <canvas class="feed-canvas" data-art="matrix"></canvas>
+                        </div>
+                        <div class="post-overlay">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="instagram-cta">
+                    <a href="https://instagram.com/dat_sart" target="_blank" class="instagram-btn">
+                        <i class="fab fa-instagram"></i>
+                        <span>Follow @dat_sart</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Let's Create Together</h2>
+                <p class="section-subtitle">Ready to bring your vision to digital life?</p>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>Collaborate With Us</h3>
+                    <p>Whether you're looking for custom digital art, interactive experiences, or tech-art collaborations, we're here to push creative boundaries together.</p>
+                    <div class="contact-methods">
+                        <div class="contact-method">
+                            <i class="fas fa-envelope"></i>
+                            <span>hello@datsart.com</span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fab fa-instagram"></i>
+                            <span>@dat_sart</span>
+                        </div>
+                        <div class="contact-method">
+                            <i class="fas fa-globe"></i>
+                            <span>Available Worldwide</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <div class="form-group">
+                        <input type="text" id="name" required>
+                        <label for="name">Your Name</label>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="email" required>
+                        <label for="email">Email Address</label>
+                    </div>
+                    <div class="form-group">
+                        <select id="project-type" required>
+                            <option value="">Select Project Type</option>
+                            <option value="commission">Art Commission</option>
+                            <option value="collaboration">Collaboration</option>
+                            <option value="consultation">Consultation</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <label for="project-type">Project Type</label>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="message" required></textarea>
+                        <label for="message">Tell us about your vision</label>
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <span>Send Message</span>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">DAT'S ART</span>
+                    <p>Bringing Technology into Art</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Navigate</h4>
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#gallery">Gallery</a>
+                    <a href="#tech">Tech</a>
+                </div>
+                <div class="footer-social">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="https://instagram.com/dat_sart" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" target="_blank">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Dat's Art. All rights reserved. | Crafted with 💖 and code</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-trail"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="scripts/main.js"></script>
+    <script src="scripts/animations.js"></script>
+    <script src="scripts/gallery.js"></script>
+</body>
+</html>
