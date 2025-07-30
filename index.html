@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dat's Art - Bringing Technology into Art</title>
+    
+    <!-- Favicon and App Icons -->
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.jpg">
+    
+    <!-- Stylesheets -->
     <link rel="stylesheet" href="styles/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -24,13 +31,17 @@
     <nav class="navbar">
         <div class="nav-container">
             <div class="logo">
-                <span class="glitch-logo" data-text="DAT'S ART">DAT'S ART</span>
-                <span class="motto">BRINGING TECHNOLOGY INTO ART</span>
+                <img src="logo.jpg" alt="Dat's Art Logo" class="logo-image">
+                <div class="logo-text">
+                    <span class="glitch-logo" data-text="DAT'S ART">DAT'S ART</span>
+                    <span class="motto">BRINGING TECHNOLOGY INTO ART</span>
+                </div>
             </div>
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
                 <li><a href="#gallery" class="nav-link">Gallery</a></li>
+                <li><a href="#featured" class="nav-link">Featured</a></li>
                 <li><a href="#instagram" class="nav-link">Instagram</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
@@ -91,15 +102,17 @@
                 <div class="about-text">
                     <div class="story-block">
                         <h3>My Journey into Tech-Art</h3>
-                        <p>Started with traditional sketching in high school, got obsessed with Processing during university, and now I spend way too much time making pixels dance. Every piece is a experiment in pushing what code can create.</p>
+                        <p>My journey began with a love for art and a deep curiosity for technology. I’ve always believed that creativity doesn’t have to stay on canvas, it can evolve. As I explored digital tools, I discovered new ways to express art through motion, code, and innovation.
+</p>
                     </div>
                     <div class="story-block">
-                        <h3>The Process (It's Messy)</h3>
-                        <p>I usually start with a wild idea at 2AM, spend hours debugging why my particles won't move right, then accidentally create something completely different that looks way cooler than what I planned.</p>
+                        <h3>The Process </h3>
+                        <p>Every piece starts with a raw idea, sometimes inspired by nature, music, or a moment. I then blend  art concepts with digital tools like AI, 3D design, and motion graphics. From sketch to screen, it’s about finding balance between visual emotion and technical execution.
+</p>
                     </div>
                     <div class="story-block">
                         <h3>Why This Matters</h3>
-                        <p>Art doesn't have to be painted on canvas or carved from stone. Code is just another medium - one that lets you create things that breathe, react, and evolve. That's the future I'm excited about.</p>
+                        <p>Art speaks. But when combined with technology, it breaks boundaries. Tech-art allows us to visualize emotions, stories, and culture in ways that feel alive, interactive, and future-forward.</p>
                     </div>
                 </div>
                 <div class="about-visual">
@@ -188,6 +201,69 @@
         </div>
     </section>
 
+    <!-- Featured Art Section -->
+    <section id="featured" class="featured-art">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Masterpieces</h2>
+                <p class="section-subtitle">Exclusive digital art pieces available for purchase</p>
+            </div>
+            <div class="featured-grid">
+                <div class="featured-item">
+                    <div class="featured-image">
+                        <img src="pic1.jpg" alt="Digital Harmony" class="art-image">
+                        <div class="image-overlay">
+                            <div class="preview-notice" onclick="showPreviewMessage('Digital Harmony')">
+                                <i class="fas fa-eye"></i>
+                                <span>Preview Only</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="featured-info">
+                        <h3>Digital Harmony</h3>
+                        <p class="art-description">A mesmerizing blend of algorithmic patterns and organic flow, representing the perfect balance between technology and nature.</p>
+                        <div class="art-details">
+                            <span class="art-type">Digital Art</span>
+                            <span class="art-size">4K Resolution</span>
+                        </div>
+                        <div class="featured-actions">
+                            <button class="buy-btn" onclick="buyArt('Digital Harmony')">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Buy Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="featured-item">
+                    <div class="featured-image">
+                        <img src="pic2.jpg" alt="Cyber Dreams" class="art-image">
+                        <div class="image-overlay">
+                            <div class="preview-notice" onclick="showPreviewMessage('Cyber Dreams')">
+                                <i class="fas fa-eye"></i>
+                                <span>Preview Only</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="featured-info">
+                        <h3>Cyber Dreams</h3>
+                        <p class="art-description">An exploration of futuristic landscapes through neural networks and machine learning, creating otherworldly visions of tomorrow.</p>
+                        <div class="art-details">
+                            <span class="art-type">AI Generated</span>
+                            <span class="art-size">Ultra HD</span>
+                        </div>
+                        <div class="featured-actions">
+                            <button class="buy-btn" onclick="buyArt('Cyber Dreams')">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>Buy Now</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Instagram Section -->
     <section id="instagram" class="instagram">
         <div class="container">
@@ -231,7 +307,7 @@
                     </div>
                 </div>
                 <div class="instagram-cta">
-                    <a href="https://instagram.com/dat_sart" target="_blank" class="instagram-btn">
+                    <a href="https://www.instagram.com/dat_sart" target="_blank" class="instagram-btn">
                         <i class="fab fa-instagram"></i>
                         <span>Follow @dat_sart</span>
                     </a>
@@ -254,7 +330,7 @@
                     <div class="contact-methods">
                         <div class="contact-method">
                             <i class="fas fa-envelope"></i>
-                            <span>joshua@datsart.studio</span>
+                            <span>atalesedavid3@gmail.com</span>
                         </div>
                         <div class="contact-method">
                             <i class="fab fa-instagram"></i>
@@ -262,7 +338,7 @@
                         </div>
                         <div class="contact-method">
                             <i class="fas fa-globe"></i>
-                            <span>Based in [Your City]</span>
+                            <span>Based in Kwara State, Nigeria</span>
                         </div>
                     </div>
                 </div>
@@ -311,12 +387,13 @@
                     <a href="#home">Home</a>
                     <a href="#about">About</a>
                     <a href="#gallery">Gallery</a>
+                    <a href="#featured">Featured</a>
                     <a href="#instagram">Instagram</a>
                 </div>
                 <div class="footer-social">
                     <h4>Connect</h4>
                     <div class="social-links">
-                        <a href="https://instagram.com/dat_sart" target="_blank">
+                        <a href="https://www.instagram.com/dat_sart" target="_blank">
                             <i class="fab fa-instagram"></i>
                         </a>
                         <a href="#" target="_blank">
@@ -333,12 +410,6 @@
             </div>
         </div>
     </footer>
-
-    <!-- Custom Cursor -->
-    <div class="custom-cursor">
-        <div class="cursor-dot"></div>
-        <div class="cursor-trail"></div>
-    </div>
 
     <!-- Scripts -->
     <script src="scripts/main.js"></script>

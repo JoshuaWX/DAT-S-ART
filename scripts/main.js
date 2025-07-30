@@ -34,74 +34,11 @@ function initializeElements() {
     elements.ctaButtons = document.querySelectorAll('.cta-button');
 }
 
-// ===== CUSTOM CURSOR =====
+// ===== CUSTOM CURSOR ===== (DISABLED FOR PERFORMANCE)
 function initializeCustomCursor() {
-    // Check if device supports custom cursor (not mobile)
-    if (window.innerWidth <= 768 || 'ontouchstart' in window) {
-        document.body.classList.add('no-custom-cursor');
-        document.body.style.cursor = 'auto';
-        return;
-    }
-
-    customCursor = {
-        dot: document.querySelector('.cursor-dot'),
-        trail: document.querySelector('.cursor-trail')
-    };
-
-    if (!customCursor.dot || !customCursor.trail) {
-        console.warn('Custom cursor elements not found');
-        document.body.classList.add('no-custom-cursor');
-        document.body.style.cursor = 'auto';
-        return;
-    }
-
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let trailX = mouseX;
-    let trailY = mouseY;
-
-    // Initialize cursor position
-    customCursor.dot.style.left = mouseX + 'px';
-    customCursor.dot.style.top = mouseY + 'px';
-    customCursor.trail.style.left = mouseX + 'px';
-    customCursor.trail.style.top = mouseY + 'px';
-
-    // Update cursor position
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        
-        customCursor.dot.style.left = mouseX + 'px';
-        customCursor.dot.style.top = mouseY + 'px';
-    });
-
-    // Animate trail with smooth following
-    function animateTrail() {
-        trailX += (mouseX - trailX) * 0.1;
-        trailY += (mouseY - trailY) * 0.1;
-        
-        customCursor.trail.style.left = trailX + 'px';
-        customCursor.trail.style.top = trailY + 'px';
-        
-        requestAnimationFrame(animateTrail);
-    }
-    animateTrail();
-
-    // Cursor hover effects
-    const hoverElements = document.querySelectorAll('a, button, .gallery-item, .instagram-post');
-    hoverElements.forEach(element => {
-        element.addEventListener('mouseenter', () => {
-            customCursor.dot.style.transform = 'translate(-50%, -50%) scale(2)';
-            customCursor.trail.style.transform = 'translate(-50%, -50%) scale(1.5)';
-        });
-
-        element.addEventListener('mouseleave', () => {
-            customCursor.dot.style.transform = 'translate(-50%, -50%) scale(1)';
-            customCursor.trail.style.transform = 'translate(-50%, -50%) scale(1)';
-        });
-    });
-
-    console.log('Custom cursor initialized successfully');
+    // Custom cursor disabled to improve performance
+    document.body.style.cursor = 'auto';
+    return;
 }
 
 // ===== NAVIGATION =====
@@ -493,3 +430,74 @@ rippleStyle.textContent = `
     }
 `;
 document.head.appendChild(rippleStyle);
+
+// ===== FEATURED ART FUNCTIONS =====
+
+// Show preview message function
+function showPreviewMessage(artName) {
+    showNotification(`This is a preview of "${artName}". To purchase the full high-resolution version, use the Buy Now button below.`);
+}
+
+// WhatsApp buy function
+function buyArt(artName) {
+    const phoneNumber = '2349037741094'; // Your WhatsApp number
+    const message = `Hi! I'm interested in buying "${artName}". Could you please provide more details about pricing and high-resolution files?`;
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+}
+
+// Image protection - Disable right-click on art images
+document.addEventListener('DOMContentLoaded', function() {
+    const artImages = document.querySelectorAll('.art-image');
+    
+    artImages.forEach(img => {
+        img.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showNotification('Image download is not allowed. Please use the Buy Now button to purchase.');
+        });
+        
+        img.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+        });
+    });
+});
+
+// Show notification function
+function showNotification(message) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'download-notification';
+    notification.textContent = message;
+    
+    // Add styles
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 10px;
+        z-index: 10001;
+        font-weight: 500;
+        box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
