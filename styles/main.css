@@ -245,6 +245,15 @@ body.no-custom-cursor {
     .container {
         padding: 0 0.75rem;
     }
+    .hero {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        min-height: 85vh;
+        padding-top: 70px;
+        padding-bottom: 0;
+    }
 }
 
 /* ===== LOADING SCREEN ===== */
