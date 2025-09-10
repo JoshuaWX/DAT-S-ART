@@ -6,6 +6,7 @@ class GalleryManager {
         this.lightbox = null;
         this.galleryItems = [];
         this.initialized = false;
+        this.intersectionObserver = null;
     }
 
     init() {
@@ -16,6 +17,7 @@ class GalleryManager {
         this.setupFilterButtons();
         this.setupItemClickHandlers();
         this.setupKeyboardNavigation();
+        this.setupIntersectionObserver();
         
         this.initialized = true;
     }
@@ -26,63 +28,92 @@ class GalleryManager {
         this.galleryItems.forEach((item, index) => {
             item.dataset.index = index;
             
-            // Add loading state
-            item.classList.add('loading');
+            // Use classes instead of direct style manipulation
+            item.classList.add('gallery-loading');
             
-            // Simulate loading time
+            // Stagger loading animations
             setTimeout(() => {
-                item.classList.remove('loading');
-                item.classList.add('loaded');
-            }, Math.random() * 1000 + 500);
+                item.classList.remove('gallery-loading');
+                item.classList.add('gallery-loaded');
+            }, index * 100 + 500);
 
-            // Add hover effects
+            // Add optimized hover effects
             this.setupItemHoverEffects(item);
         });
     }
 
     setupItemHoverEffects(item) {
         const canvas = item.querySelector('.art-canvas');
-        let isHovered = false;
-
+        let hoverTimeout = null;
+        
+        // Throttle hover effects for better performance
         item.addEventListener('mouseenter', () => {
-            isHovered = true;
-            item.classList.add('hovered');
+            clearTimeout(hoverTimeout);
+            item.classList.add('gallery-hovered');
             
-            // Enhance canvas animation on hover
             if (canvas) {
-                canvas.style.filter = 'brightness(1.2) saturate(1.3)';
-                canvas.style.transform = 'scale(1.05)';
+                canvas.style.filter = 'brightness(1.1) saturate(1.2)';
+                canvas.style.transform = 'scale(1.03)';
             }
         });
 
         item.addEventListener('mouseleave', () => {
-            isHovered = false;
-            item.classList.remove('hovered');
-            
-            if (canvas) {
-                canvas.style.filter = '';
-                canvas.style.transform = '';
-            }
+            hoverTimeout = setTimeout(() => {
+                item.classList.remove('gallery-hovered');
+                
+                if (canvas) {
+                    canvas.style.filter = '';
+                    canvas.style.transform = '';
+                }
+            }, 50);
         });
 
-        // Add tilt effect
+        // Simplified tilt effect with RAF
+        let isAnimating = false;
         item.addEventListener('mousemove', (e) => {
-            if (!isHovered) return;
+            if (!item.classList.contains('gallery-hovered') || isAnimating) return;
             
-            const rect = item.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const rotateX = (y - centerY) / centerY * -10;
-            const rotateY = (x - centerX) / centerX * 10;
-            
-            item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px)`;
+            isAnimating = true;
+            requestAnimationFrame(() => {
+                const rect = item.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / centerY * -5; // Reduced rotation
+                const rotateY = (x - centerX) / centerX * 5;
+                
+                item.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+                isAnimating = false;
+            });
         });
 
         item.addEventListener('mouseleave', () => {
             item.style.transform = '';
+        });
+    }
+
+    setupIntersectionObserver() {
+        // Use intersection observer for better performance
+        const options = {
+            threshold: 0.1,
+            rootMargin: '50px'
+        };
+
+        this.intersectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('gallery-in-view');
+                } else {
+                    entry.target.classList.remove('gallery-in-view');
+                }
+            });
+        }, options);
+
+        // Observe all gallery items
+        this.galleryItems.forEach(item => {
+            this.intersectionObserver.observe(item);
         });
     }
 
@@ -93,8 +124,13 @@ class GalleryManager {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const filter = btn.dataset.filter;
-                this.filterGallery(filter);
-                this.updateActiveFilter(btn);
+                
+                // Debounce filter calls
+                clearTimeout(this.filterTimeout);
+                this.filterTimeout = setTimeout(() => {
+                    this.filterGallery(filter);
+                    this.updateActiveFilter(btn);
+                }, 100);
             });
         });
     }
@@ -102,18 +138,21 @@ class GalleryManager {
     filterGallery(filter) {
         this.currentFilter = filter;
         
-        this.galleryItems.forEach((item, index) => {
-            const category = item.dataset.category;
-            const shouldShow = filter === 'all' || category === filter;
-            
-            if (shouldShow) {
-                this.showItem(item, index);
-            } else {
-                this.hideItem(item);
-            }
+        // Use requestAnimationFrame for smooth filtering
+        requestAnimationFrame(() => {
+            this.galleryItems.forEach((item, index) => {
+                const category = item.dataset.category;
+                const shouldShow = filter === 'all' || category === filter;
+                
+                if (shouldShow) {
+                    this.showItem(item, index);
+                } else {
+                    this.hideItem(item);
+                }
+            });
         });
 
-        // Update URL hash
+        // Update URL hash without triggering scroll
         if (filter !== 'all') {
             history.replaceState(null, null, `#gallery-${filter}`);
         } else {
@@ -123,24 +162,24 @@ class GalleryManager {
 
     showItem(item, index) {
         item.style.display = 'block';
-        item.style.opacity = '0';
-        item.style.transform = 'translateY(30px) scale(0.9)';
+        item.classList.remove('gallery-hidden');
+        item.classList.add('gallery-showing');
         
+        // Stagger with reduced delays
         setTimeout(() => {
-            item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-            item.style.opacity = '1';
-            item.style.transform = 'translateY(0) scale(1)';
-        }, index * 100);
+            item.classList.add('gallery-visible');
+        }, Math.min(index * 30, 200)); // Cap at 200ms
     }
 
     hideItem(item) {
-        item.style.transition = 'all 0.4s ease';
-        item.style.opacity = '0';
-        item.style.transform = 'translateY(-20px) scale(0.8)';
+        item.classList.remove('gallery-visible', 'gallery-showing');
+        item.classList.add('gallery-hidden');
         
         setTimeout(() => {
-            item.style.display = 'none';
-        }, 400);
+            if (item.classList.contains('gallery-hidden')) {
+                item.style.display = 'none';
+            }
+        }, 300);
     }
 
     updateActiveFilter(activeBtn) {
@@ -190,7 +229,7 @@ class GalleryManager {
                         <h2 class="lightbox-title"></h2>
                         <p class="lightbox-category"></p>
                         <div class="lightbox-description">
-                            <p>This is an interactive digital art piece created using advanced web technologies and mathematical algorithms.</p>
+                            <p>This digital art piece showcases the creative possibilities when art meets technology.</p>
                             <div class="lightbox-tech">
                                 <h4>Technologies Used:</h4>
                                 <div class="tech-tags">
@@ -303,7 +342,7 @@ class GalleryManager {
     updateTechTags(artType) {
         const techTagsContainer = this.lightbox.querySelector('.tech-tags');
         const tagMap = {
-            fractal: ['HTML5 Canvas', 'Recursive Algorithms', 'Mathematical Art'],
+            fractal: ['HTML5 Canvas', 'Mathematical Art', 'Geometric Patterns'],
             particles: ['Particle Physics', 'Interactive Canvas', 'Mouse Tracking'],
             waves: ['Sine Waves', 'Audio Visualization', 'Mathematical Functions'],
             noise: ['Perlin Noise', 'Procedural Generation', 'Image Processing'],
@@ -477,7 +516,7 @@ class InfiniteScroll {
     }
 
     generateMockItems(count) {
-        const categories = ['generative', 'interactive', 'ai', 'web'];
+        const categories = ['digital', 'interactive', 'mixed', 'web'];
         const artTypes = ['fractal', 'particles', 'waves', 'noise', 'mandala'];
         const items = [];
 

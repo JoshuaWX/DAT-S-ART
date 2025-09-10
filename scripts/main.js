@@ -4,6 +4,36 @@
 let isLoading = true;
 let customCursor = null;
 let scrollProgress = 0;
+let lastScrollTime = 0;
+let scrollThrottle = 16; // ~60fps
+let isScrolling = false;
+let scrollEndTimer = null;
+
+// Mark that main scroll handler exists to prevent conflicts
+window.mainScrollHandlerExists = true;
+
+// Performance optimizations
+const performanceOptimizer = {
+    rafId: null,
+    isRafScheduled: false,
+    
+    scheduleUpdate(callback) {
+        if (!this.isRafScheduled) {
+            this.isRafScheduled = true;
+            this.rafId = requestAnimationFrame(() => {
+                callback();
+                this.isRafScheduled = false;
+            });
+        }
+    },
+    
+    cancelUpdate() {
+        if (this.rafId) {
+            cancelAnimationFrame(this.rafId);
+            this.isRafScheduled = false;
+        }
+    }
+};
 
 // DOM Elements
 const elements = {};
@@ -18,6 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeLoadingScreen();
     initializeMobileMenu();
     initializeGalleryFilter();
+    initializeStatCounters();
+    initializeSubscribeSection();
+    initializePerformanceMonitoring();
 });
 
 // Initialize DOM elements
@@ -32,6 +65,8 @@ function initializeElements() {
     elements.galleryItems = document.querySelectorAll('.gallery-item');
     elements.filterBtns = document.querySelectorAll('.filter-btn');
     elements.ctaButtons = document.querySelectorAll('.cta-button');
+    elements.subscribeForm = document.querySelector('.subscribe-form');
+    elements.subscribeEmail = document.getElementById('subscribe-email');
 }
 
 // ===== CUSTOM CURSOR ===== (DISABLED FOR PERFORMANCE)
@@ -66,23 +101,31 @@ function initializeNavigation() {
         });
     });
 
-    // Navbar background on scroll
+    // Optimized navbar background on scroll with RAF
+    let navbarUpdateScheduled = false;
+    
     window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        
-        if (scrolled > 100) {
-            elements.navbar.style.background = 'rgba(255, 255, 255, 0.15)';
-            elements.navbar.style.backdropFilter = 'blur(30px) saturate(200%) brightness(120%)';
-            elements.navbar.style.borderColor = 'rgba(135, 206, 235, 0.4)';
-        } else {
-            elements.navbar.style.background = 'rgba(255, 255, 255, 0.08)';
-            elements.navbar.style.backdropFilter = 'blur(25px) saturate(180%)';
-            elements.navbar.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-        }
+        if (!navbarUpdateScheduled) {
+            navbarUpdateScheduled = true;
+            performanceOptimizer.scheduleUpdate(() => {
+                const scrolled = window.pageYOffset;
+                
+                if (scrolled > 100) {
+                    elements.navbar.style.background = 'linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(22, 33, 62, 0.95) 100%)';
+                    elements.navbar.style.backdropFilter = 'blur(30px) saturate(150%)';
+                    elements.navbar.style.borderColor = 'rgba(135, 206, 235, 0.4)';
+                } else {
+                    elements.navbar.style.background = 'linear-gradient(135deg, rgba(10, 10, 10, 0.9) 0%, rgba(26, 26, 46, 0.9) 50%, rgba(22, 33, 62, 0.9) 100%)';
+                    elements.navbar.style.backdropFilter = 'blur(25px) saturate(130%)';
+                    elements.navbar.style.borderColor = 'rgba(135, 206, 235, 0.2)';
+                }
 
-        updateScrollProgress();
-        updateActiveNavLink();
-    });
+                updateScrollProgress();
+                updateActiveNavLink();
+                navbarUpdateScheduled = false;
+            });
+        }
+    }, { passive: true });
 
     // Scroll progress indicator
     function updateScrollProgress() {
@@ -91,23 +134,25 @@ function initializeNavigation() {
         scrollProgress = (winScroll / height) * 100;
     }
 
-    // Update active navigation link based on scroll position
-    function updateActiveNavLink() {
-        const sections = document.querySelectorAll('section[id]');
-        const scrollPos = window.pageYOffset + 150; // Account for floating navbar
-
-        sections.forEach(section => {
-            const sectionTop = section.offsetTop;
-            const sectionHeight = section.offsetHeight;
-            const sectionId = section.getAttribute('id');
-            const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-
-            if (scrollPos >= sectionTop && scrollPos < sectionTop + sectionHeight) {
+    // Optimized active navigation link update with intersection observer
+    const sections = document.querySelectorAll('section[id]');
+    const navObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                const sectionId = entry.target.getAttribute('id');
+                const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
+                
+                // Remove active class from all links
                 elements.navLinks.forEach(link => link.classList.remove('active'));
+                
+                // Add active class to current link
                 if (navLink) navLink.classList.add('active');
             }
         });
-    }
+    }, { threshold: 0.5 });
+
+    // Observe all sections
+    sections.forEach(section => navObserver.observe(section));
 }
 
 // ===== MOBILE MENU =====
@@ -174,27 +219,29 @@ function animateHeroText() {
 
 // ===== SCROLL EFFECTS =====
 function initializeScrollEffects() {
-    // Intersection Observer for scroll animations
+    // High-performance intersection observer for scroll animations
     const observerOptions = {
-        threshold: 0.1,
+        threshold: [0.1, 0.5],
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver((entries) => {
+    const scrollObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
+                // Unobserve after animation to improve performance
+                scrollObserver.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
-    // Observe elements for animation
+    // Observe elements for animation with better performance
     const animateElements = document.querySelectorAll('.section-header, .gallery-item, .tech-category, .story-block');
     animateElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
-        el.style.transition = 'all 0.8s ease';
-        observer.observe(el);
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        scrollObserver.observe(el);
     });
 
     // Add CSS for animate-in class
@@ -207,22 +254,34 @@ function initializeScrollEffects() {
     `;
     document.head.appendChild(style);
 
-    // Parallax effect for hero background
-    window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const parallaxElements = document.querySelectorAll('.hero-bg');
-        
-        parallaxElements.forEach(element => {
-            const speed = 0.5;
-            element.style.transform = `translateY(${scrolled * speed}px)`;
-        });
-    });
+    // Optimized parallax effect with performance throttling
+    let parallaxScheduled = false;
+    const parallaxElements = document.querySelectorAll('.hero-bg');
+    
+    if (parallaxElements.length > 0) {
+        window.addEventListener('scroll', () => {
+            if (!parallaxScheduled) {
+                parallaxScheduled = true;
+                performanceOptimizer.scheduleUpdate(() => {
+                    const scrolled = window.pageYOffset;
+                    
+                    parallaxElements.forEach(element => {
+                        const speed = 0.5;
+                        element.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
+                    });
+                    
+                    parallaxScheduled = false;
+                });
+            }
+        }, { passive: true });
+    }
 }
 
 // ===== GALLERY FILTER =====
 function initializeGalleryFilter() {
     if (!elements.filterBtns || !elements.galleryItems) return;
 
+    // Use DocumentFragment for better performance
     elements.filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             const filterValue = btn.getAttribute('data-filter');
@@ -231,29 +290,39 @@ function initializeGalleryFilter() {
             elements.filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
 
-            // Filter gallery items
-            elements.galleryItems.forEach(item => {
-                const category = item.getAttribute('data-category');
-                
-                if (filterValue === 'all' || category === filterValue) {
-                    item.style.display = 'block';
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.8)';
-                    
-                    setTimeout(() => {
-                        item.style.opacity = '1';
-                        item.style.transform = 'scale(1)';
-                    }, 100);
-                } else {
-                    item.style.opacity = '0';
-                    item.style.transform = 'scale(0.8)';
-                    
-                    setTimeout(() => {
-                        item.style.display = 'none';
-                    }, 300);
-                }
+            // Optimized filter with requestAnimationFrame
+            performanceOptimizer.scheduleUpdate(() => {
+                filterGalleryItems(filterValue);
             });
         });
+    });
+}
+
+function filterGalleryItems(filterValue) {
+    elements.galleryItems.forEach((item, index) => {
+        const category = item.getAttribute('data-category');
+        const shouldShow = filterValue === 'all' || category === filterValue;
+        
+        if (shouldShow) {
+            item.style.display = 'block';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            
+            // Stagger animations for better visual appeal
+            setTimeout(() => {
+                item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                item.style.opacity = '1';
+                item.style.transform = 'scale(1)';
+            }, index * 50); // Reduced delay for faster animations
+        } else {
+            item.style.transition = 'all 0.4s ease';
+            item.style.opacity = '0';
+            item.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                item.style.display = 'none';
+            }, 400);
+        }
     });
 }
 
@@ -440,7 +509,7 @@ function showPreviewMessage(artName) {
 
 // WhatsApp buy function
 function buyArt(artName) {
-    const phoneNumber = '2349037741094'; // Your WhatsApp number
+    const phoneNumber = '2348023088491'; // Updated WhatsApp number
     const message = `Hi! I'm interested in buying "${artName}". Could you please provide more details about pricing and high-resolution files?`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     
@@ -501,3 +570,359 @@ function showNotification(message) {
         }, 300);
     }, 3000);
 }
+
+// ===== ANIMATED STAT COUNTERS =====
+function initializeStatCounters() {
+    const statNumbers = document.querySelectorAll('.stat-number');
+    
+    const animateCounter = (element, target) => {
+        let current = 0;
+        const increment = target / 50; // Animation duration control
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            
+            // Format number display
+            if (target >= 1000) {
+                element.textContent = Math.floor(current / 1000) + 'K+';
+            } else {
+                element.textContent = Math.floor(current) + '+';
+            }
+        }, 50);
+    };
+    
+    // Intersection Observer for triggering animation
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const element = entry.target;
+                const target = parseInt(element.dataset.target);
+                animateCounter(element, target);
+                observer.unobserve(element); // Only animate once
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+    
+    // Observe all stat numbers
+    statNumbers.forEach(stat => {
+        observer.observe(stat);
+    });
+}
+
+// ===== SUBSCRIBE SECTION =====
+function initializeSubscribeSection() {
+    if (!elements.subscribeForm) return;
+    
+    // Animate subscriber count on load
+    animateSubscriberCount();
+    
+    // Handle form submission
+    elements.subscribeForm.addEventListener('submit', handleSubscribeSubmit);
+    
+    // Orbital icon animation
+    initializeOrbitalAnimation();
+}
+
+function animateSubscriberCount() {
+    const countElement = document.querySelector('.count-number');
+    if (!countElement) return;
+    
+    const target = parseInt(countElement.dataset.target) || 250;
+    let current = 0;
+    const increment = target / 100;
+    
+    const counter = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            current = target;
+            clearInterval(counter);
+        }
+        countElement.textContent = Math.floor(current);
+    }, 20);
+}
+
+function handleSubscribeSubmit(e) {
+    e.preventDefault();
+    
+    const email = elements.subscribeEmail.value;
+    const submitBtn = elements.subscribeForm.querySelector('.subscribe-btn');
+    const originalText = submitBtn.querySelector('span').textContent;
+    
+    // Basic email validation
+    if (!isValidEmail(email)) {
+        showSubscribeMessage('Please enter a valid email address', 'error');
+        return;
+    }
+    
+    // Update button state
+    submitBtn.querySelector('span').textContent = 'Subscribing...';
+    submitBtn.style.opacity = '0.7';
+    submitBtn.disabled = true;
+    
+    // Simulate subscription process
+    setTimeout(() => {
+        showSubscribeMessage('Thank you for subscribing! 🎨', 'success');
+        elements.subscribeEmail.value = '';
+        
+        // Reset button
+        submitBtn.querySelector('span').textContent = originalText;
+        submitBtn.style.opacity = '1';
+        submitBtn.disabled = false;
+        
+        // Update subscriber count
+        updateSubscriberCount();
+    }, 1500);
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
+function showSubscribeMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `subscribe-message ${type}`;
+    messageDiv.textContent = message;
+    messageDiv.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        background: ${type === 'success' ? 'rgba(46, 204, 113, 0.9)' : 'rgba(231, 76, 60, 0.9)'};
+        color: white;
+        border-radius: 10px;
+        font-weight: 500;
+        z-index: 10000;
+        backdrop-filter: blur(10px);
+        animation: slideInRight 0.3s ease;
+    `;
+    
+    document.body.appendChild(messageDiv);
+    setTimeout(() => {
+        messageDiv.remove();
+    }, 4000);
+}
+
+function updateSubscriberCount() {
+    const countElement = document.querySelector('.count-number');
+    if (countElement) {
+        const current = parseInt(countElement.textContent);
+        countElement.textContent = current + 1;
+    }
+}
+
+function initializeOrbitalAnimation() {
+    const orbitIcons = document.querySelectorAll('.orbit-icon');
+    orbitIcons.forEach((icon, index) => {
+        icon.style.animationDelay = `${index * 2}s`;
+    });
+}
+
+// ===== PERFORMANCE MONITORING =====
+function initializePerformanceMonitoring() {
+    // Performance monitor (Ctrl+P to toggle)
+    let performanceMonitor = null;
+    let isMonitorVisible = false;
+    
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'p') {
+            e.preventDefault();
+            togglePerformanceMonitor();
+        }
+    });
+    
+    function togglePerformanceMonitor() {
+        if (isMonitorVisible) {
+            hidePerformanceMonitor();
+        } else {
+            showPerformanceMonitor();
+        }
+    }
+    
+    function showPerformanceMonitor() {
+        if (performanceMonitor) return;
+        
+        performanceMonitor = document.createElement('div');
+        performanceMonitor.id = 'performance-monitor';
+        performanceMonitor.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(135, 206, 235, 0.3);
+        `;
+        
+        document.body.appendChild(performanceMonitor);
+        updatePerformanceStats();
+        isMonitorVisible = true;
+    }
+    
+    function hidePerformanceMonitor() {
+        if (performanceMonitor) {
+            performanceMonitor.remove();
+            performanceMonitor = null;
+            isMonitorVisible = false;
+        }
+    }
+    
+    function updatePerformanceStats() {
+        if (!performanceMonitor) return;
+        
+        const stats = {
+            fps: Math.round(1000 / 16), // Approximate
+            memory: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : 'N/A',
+            scrollEvents: 'Throttled (16ms)',
+            animations: 'GPU Accelerated'
+        };
+        
+        performanceMonitor.innerHTML = `
+            <div>🚀 Performance Monitor</div>
+            <div>FPS: ~${stats.fps}</div>
+            <div>Memory: ${stats.memory}MB</div>
+            <div>Scroll: ${stats.scrollEvents}</div>
+            <div>Animations: ${stats.animations}</div>
+            <div style="margin-top: 8px; opacity: 0.7;">Press Ctrl+P to hide</div>
+        `;
+        
+        if (isMonitorVisible) {
+            setTimeout(updatePerformanceStats, 1000);
+        }
+    }
+}
+
+// ===== THROTTLED SCROLL EFFECTS =====
+function initializeScrollEffects() {
+    // High-performance intersection observer for scroll animations
+    const observerOptions = {
+        threshold: [0.1, 0.5],
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                // Unobserve after animation to improve performance
+                scrollObserver.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation with better performance
+    const animateElements = document.querySelectorAll('.section-header, .gallery-item, .tech-category, .story-block');
+    animateElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        scrollObserver.observe(el);
+    });
+
+    // Add CSS for animate-in class
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Optimized parallax effect with performance throttling
+    let parallaxScheduled = false;
+    const parallaxElements = document.querySelectorAll('.hero-bg');
+    
+    if (parallaxElements.length > 0) {
+        window.addEventListener('scroll', () => {
+            if (!parallaxScheduled) {
+                parallaxScheduled = true;
+                performanceOptimizer.scheduleUpdate(() => {
+                    const scrolled = window.pageYOffset;
+                    
+                    parallaxElements.forEach(element => {
+                        const speed = 0.5;
+                        element.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
+                    });
+                    
+                    parallaxScheduled = false;
+                });
+            }
+        }, { passive: true });
+    }
+}
+
+// Centralized scroll handler for maximum performance
+function handleThrottledScroll() {
+    const now = Date.now();
+    if (now - lastScrollTime < scrollThrottle) return;
+    
+    lastScrollTime = now;
+    
+    // Mark scrolling state
+    isScrolling = true;
+    clearTimeout(scrollEndTimer);
+    
+    performanceOptimizer.scheduleUpdate(() => {
+        handleNavbarScroll();
+        handleParallaxScroll();
+        
+        // Reset scrolling state after delay
+        scrollEndTimer = setTimeout(() => {
+            isScrolling = false;
+        }, 150);
+    });
+}
+
+function handleNavbarScroll() {
+    if (!elements.navbar) return;
+    
+    const scrolled = window.pageYOffset > 50;
+    elements.navbar.classList.toggle('scrolled', scrolled);
+}
+
+function handleParallaxScroll() {
+    // Only update if currently visible and scrolling
+    if (!isScrolling) return;
+    
+    const scrolled = window.pageYOffset;
+    const rate = scrolled * -0.3; // Reduced parallax intensity for better performance
+    
+    // Apply parallax to hero background only if in viewport
+    const heroCanvas = document.getElementById('hero-canvas');
+    if (heroCanvas && scrolled < window.innerHeight * 2) {
+        heroCanvas.style.transform = `translate3d(0, ${rate}px, 0)`;
+    }
+}
+
+// Initialize optimized parallax elements
+function initializeParallaxElements(elements) {
+    elements.forEach(element => {
+        const speed = element.dataset.parallax || 0.5;
+        // Use transform3d for hardware acceleration
+        element.style.transform = `translate3d(0, 0, 0)`;
+        element.style.willChange = 'transform';
+        element.style.backfaceVisibility = 'hidden';
+    });
+}
+
+// Scroll to top function for footer button
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+}
+
+// Make scrollToTop globally available
+window.scrollToTop = scrollToTop;

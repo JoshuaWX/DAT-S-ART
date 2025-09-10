@@ -1,0 +1,257 @@
+/* ===== COMPREHENSIVE PERFORMANCE OPTIMIZATIONS ===== */
+
+/* GPU Acceleration and Hardware Optimization */
+.gpu-accelerated,
+.hero-bg,
+.hero-content,
+.navbar,
+.gallery-item,
+canvas,
+.parallax-element {
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: transform;
+}
+
+.gpu-scale {
+    transform: translateZ(0) scale3d(1, 1, 1);
+    backface-visibility: hidden;
+}
+
+.gpu-opacity {
+    transform: translateZ(0);
+    will-change: opacity;
+}
+
+/* Optimized canvas rendering */
+canvas {
+    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+
+/* Enhanced smooth transitions with hardware acceleration */
+.smooth-transition {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+.fast-transition {
+    transition: transform 0.15s cubic-bezier(0.4, 0.0, 0.2, 1);
+}
+
+/* Optimized scroll performance */
+* {
+    scroll-behavior: smooth;
+}
+
+html {
+    scroll-padding-top: 100px;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+}
+
+/* Performance-optimized animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 30px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translate3d(-30px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translate3d(30px, 0, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+}
+
+/* Apply animations to scroll reveal elements */
+.scroll-reveal.active,
+.animate-in {
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scroll-reveal-left.active {
+    animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scroll-reveal-right.active {
+    animation: slideInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.scroll-scale.active {
+    animation: scaleIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Optimize gallery items */
+.gallery-item {
+    contain: layout style paint;
+    will-change: transform, opacity;
+}
+
+.gallery-item:hover {
+    transform: translate3d(0, -5px, 0);
+}
+
+/* Optimize navigation */
+.navbar {
+    contain: layout style;
+    will-change: background-color, backdrop-filter;
+}
+
+.nav-link {
+    contain: layout;
+    will-change: color, background-color, transform;
+}
+
+/* Animation Performance */
+.animate-efficiently {
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Scroll Performance */
+.scroll-optimized {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Mobile Performance Optimizations */
+@media (max-width: 768px) {
+    .mobile-optimized {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        -webkit-perspective: 1000px;
+        perspective: 1000px;
+    }
+    
+    /* Reduce animations on mobile for better performance */
+    * {
+        animation-duration: 0.5s !important;
+        transition-duration: 0.3s !important;
+    }
+    
+    /* Optimize transforms for mobile */
+    .mobile-transform {
+        -webkit-transform: translateZ(0);
+        transform: translateZ(0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+    
+    /* Disable expensive effects on mobile */
+    .parallax-element {
+        transform: none !important;
+    }
+    
+    /* Optimize canvas for mobile */
+    canvas {
+        image-rendering: pixelated;
+        will-change: auto;
+    }
+    
+    /* Reduce complex animation complexity on mobile */
+    .complex-animation {
+        animation-duration: 0.5s !important;
+    }
+    
+    /* Reduce backdrop blur for mobile performance */
+    .navbar {
+        backdrop-filter: blur(10px) !important;
+    }
+}
+
+/* High DPI optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    canvas {
+        image-rendering: auto;
+    }
+}
+
+/* Battery saving and accessibility optimizations */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .parallax-element {
+        transform: none !important;
+    }
+    
+    canvas {
+        will-change: auto !important;
+    }
+}
+
+/* Memory optimization */
+.loading-screen.loaded {
+    display: none !important;
+    visibility: hidden;
+}
+
+/* Container queries for better performance */
+.gallery-grid {
+    container-type: inline-size;
+    contain: layout;
+}
+
+/* Text rendering optimizations */
+.hero-title,
+.section-title {
+    text-rendering: optimizeSpeed;
+    font-feature-settings: "kern" 1;
+}
+
+/* Performance-first hover effects */
+.hover-lift {
+    transition: transform 0.3s ease;
+    will-change: transform;
+}
+
+.hover-lift:hover {
+    transform: translate3d(0, -2px, 0);
+}

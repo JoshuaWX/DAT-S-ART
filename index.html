@@ -6,20 +6,21 @@
     <title>Dat's Art - Bringing Technology into Art</title>
     
     <!-- Favicon and App Icons -->
-    <link rel="icon" type="image/jpeg" href="logo.jpg">
-    <link rel="shortcut icon" type="image/jpeg" href="logo.jpg">
-    <link rel="apple-touch-icon" href="logo.jpg">
+    <link rel="icon" type="image/jpeg" href="images/pfp-art.jpg">
+    <link rel="shortcut icon" type="image/jpeg" href="images/pfp-art.jpg">
+    <link rel="apple-touch-icon" href="images/pfp-art.jpg">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="styles/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/performance.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- Loading Screen -->
     <div id="loading-screen">
         <div class="loading-animation">
-            <canvas id="loading-canvas"></canvas>
+            <div class="morphing-shape" id="loading-morphing-shape"></div>
             <div class="loading-text">
                 <span class="glitch" data-text="DAT'S ART">DAT'S ART</span>
                 <p>Initializing Creative Matrix...</p>
@@ -28,24 +29,25 @@
     </div>
 
     <!-- Navigation -->
-    <nav class="navbar">
+    <nav class="navbar" aria-label="Main Navigation">
         <div class="nav-container">
             <div class="logo">
-                <img src="logo.jpg" alt="Dat's Art Logo" class="logo-image">
+                <img src="images/pfp-art.jpg" alt="Dat's Art Logo" class="logo-image" width="40" height="40">
                 <div class="logo-text">
                     <span class="glitch-logo" data-text="DAT'S ART">DAT'S ART</span>
                     <span class="motto">BRINGING TECHNOLOGY INTO ART</span>
                 </div>
             </div>
             <ul class="nav-menu">
-                <li><a href="#home" class="nav-link">Home</a></li>
-                <li><a href="#about" class="nav-link">About</a></li>
-                <li><a href="#gallery" class="nav-link">Gallery</a></li>
-                <li><a href="#featured" class="nav-link">Featured</a></li>
-                <li><a href="#instagram" class="nav-link">Instagram</a></li>
-                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="#home" class="nav-link" tabindex="0">Home</a></li>
+                <li><a href="#about" class="nav-link" tabindex="0">About</a></li>
+                <li><a href="#gallery" class="nav-link" tabindex="0">Gallery</a></li>
+                <li><a href="#featured" class="nav-link" tabindex="0">Featured</a></li>
+                <li><a href="#instagram" class="nav-link" tabindex="0">Instagram</a></li>
+                <li><a href="#subscribe" class="nav-link" tabindex="0">Subscribe</a></li>
+                <li><a href="#contact" class="nav-link" tabindex="0">Contact</a></li>
             </ul>
-            <div class="hamburger">
+            <div class="hamburger" aria-label="Open menu" tabindex="0">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -65,7 +67,7 @@
                     <span class="line-2">MEETS</span>
                     <span class="line-3 gradient-text">CREATIVITY</span>
                 </h1>
-                <p class="hero-subtitle">Art reimagined through technology, pixels painted with passion</p>
+                <p class="hero-subtitle">Creating art with technology, one pixel at a time</p>
                 <div class="hero-cta">
                     <button class="cta-button primary" onclick="scrollToSection('gallery')">
                         <span>Explore Gallery</span>
@@ -82,6 +84,7 @@
                     <div class="float-item pixel-art">■</div>
                     <div class="float-item binary">01101</div>
                     <div class="float-item brush">🎨</div>
+                    
                 </div>
             </div>
         </div>
@@ -95,11 +98,11 @@
     <section id="about" class="about">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">From Brushes to Binary</h2>
-                <p class="section-subtitle">Our journey into the fusion of art and technology</p>
+                <h2 class="section-title">The Art of Code</h2>
+                <p class="section-subtitle">Where creativity meets technology</p>
             </div>
             <div class="about-content">
-                <div class="about-text">
+                <div class="about-cards">
                     <div class="story-block">
                         <h3>My Journey into Tech-Art</h3>
                         <p>My journey began with a love for art and a deep curiosity for technology. I’ve always believed that creativity doesn’t have to stay on canvas, it can evolve. As I explored digital tools, I discovered new ways to express art through motion, code, and innovation.
@@ -114,9 +117,13 @@
                         <h3>Why This Matters</h3>
                         <p>Art speaks. But when combined with technology, it breaks boundaries. Tech-art allows us to visualize emotions, stories, and culture in ways that feel alive, interactive, and future-forward.</p>
                     </div>
+    
                 </div>
-                <div class="about-visual">
-                    <div class="morphing-shape" id="morphing-shape"></div>
+                <!-- Portfolio Button -->
+                <div class="portfolio-btn-block">
+                    <a href="https://datsartportfolio.carrd.co" target="_blank" rel="noopener" class="portfolio-btn">
+                        View Full Portfolio
+                    </a>
                 </div>
             </div>
         </div>
@@ -127,74 +134,74 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Digital Masterpieces</h2>
-                <p class="section-subtitle">Where imagination meets implementation</p>
+                <p class="section-subtitle">My latest creative explorations</p>
             </div>
             <div class="gallery-filter">
                 <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="generative">Generative</button>
+                <button class="filter-btn" data-filter="digital">Digital</button>
                 <button class="filter-btn" data-filter="interactive">Interactive</button>
-                <button class="filter-btn" data-filter="ai">AI Art</button>
+                <button class="filter-btn" data-filter="mixed">Mixed Media</button>
                 <button class="filter-btn" data-filter="web">Web Art</button>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item" data-category="generative">
+                <div class="gallery-item masterpiece-item" data-category="digital">
                     <div class="item-image">
-                        <canvas class="art-canvas" data-art="fractal"></canvas>
+                        <img src="images/Gallery1.jpg" alt="Digital Masterpiece 1 - Abstract Flow" class="gallery-image" loading="lazy" width="400" height="300">
                     </div>
                     <div class="item-overlay">
-                        <h3>Fractal Dreams</h3>
-                        <p>Generative Art</p>
-                        <button class="view-btn">View Details</button>
+                        <h3>Abstract Flow</h3>
+                        <p>Digital Art</p>
+                        <button class="view-btn" tabindex="0">View Details</button>
+                    </div>
+                </div>
+                <div class="gallery-item masterpiece-item" data-category="interactive">
+                    <div class="item-image">
+                        <img src="images/gallery2.jpg" alt="Digital Masterpiece 2 - Moving Colors" class="gallery-image" loading="lazy" width="400" height="300">
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Moving Colors</h3>
+                        <p>Interactive Experience</p>
+                        <button class="view-btn" tabindex="0">Interact</button>
+                    </div>
+                </div>
+                <div class="gallery-item masterpiece-item" data-category="mixed">
+                    <div class="item-image">
+                        <img src="images/gallery3.jpg" alt="Digital Masterpiece 3 - Color Dreams" class="gallery-image" loading="lazy" width="400" height="300">
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Color Dreams</h3>
+                        <p>Mixed Media</p>
+                        <button class="view-btn" tabindex="0">View Details</button>
+                    </div>
+                </div>
+                <div class="gallery-item masterpiece-item" data-category="web">
+                    <div class="item-image">
+                        <img src="images/gallery4.jpg" alt="Digital Masterpiece 4 - Code Canvas" class="gallery-image" loading="lazy" width="400" height="300">
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Code Canvas</h3>
+                        <p>Web Art</p>
+                        <button class="view-btn" tabindex="0">Experience</button>
+                    </div>
+                </div>
+                <div class="gallery-item" data-category="digital">
+                    <div class="item-image">
+                        <img src="images/pic1.jpg" alt="Digital Harmony digital design" class="gallery-image" loading="lazy" width="400" height="300">
+                    </div>
+                    <div class="item-overlay">
+                        <h3>Digital Harmony</h3>
+                        <p>Digital Design</p>
+                        <button class="view-btn" tabindex="0">View Details</button>
                     </div>
                 </div>
                 <div class="gallery-item" data-category="interactive">
                     <div class="item-image">
-                        <canvas class="art-canvas" data-art="particles"></canvas>
+                        <img src="images/pic2.jpg" alt="Motion Study interactive art" class="gallery-image" loading="lazy" width="400" height="300">
                     </div>
                     <div class="item-overlay">
-                        <h3>Interactive Particles</h3>
-                        <p>Web Experience</p>
-                        <button class="view-btn">Interact</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="ai">
-                    <div class="item-image">
-                        <div class="placeholder-art ai-art">AI Generated</div>
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Neural Landscapes</h3>
-                        <p>AI Collaboration</p>
-                        <button class="view-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="web">
-                    <div class="item-image">
-                        <canvas class="art-canvas" data-art="waves"></canvas>
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Digital Waves</h3>
-                        <p>CSS Animation</p>
-                        <button class="view-btn">Experience</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="generative">
-                    <div class="item-image">
-                        <canvas class="art-canvas" data-art="noise"></canvas>
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Perlin Noise Art</h3>
-                        <p>Algorithm Art</p>
-                        <button class="view-btn">View Details</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="interactive">
-                    <div class="item-image">
-                        <canvas class="art-canvas" data-art="mandala"></canvas>
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Digital Mandala</h3>
-                        <p>Interactive Pattern</p>
-                        <button class="view-btn">Create</button>
+                        <h3>Motion Study</h3>
+                        <p>Interactive Art</p>
+                        <button class="view-btn" tabindex="0">Create</button>
                     </div>
                 </div>
             </div>
@@ -211,7 +218,7 @@
             <div class="featured-grid">
                 <div class="featured-item">
                     <div class="featured-image">
-                        <img src="pic1.jpg" alt="Digital Harmony" class="art-image">
+                        <img src="images/pic1.jpg" alt="Digital Harmony" class="art-image">
                         <div class="image-overlay">
                             <div class="preview-notice" onclick="showPreviewMessage('Digital Harmony')">
                                 <i class="fas fa-eye"></i>
@@ -221,7 +228,7 @@
                     </div>
                     <div class="featured-info">
                         <h3>Digital Harmony</h3>
-                        <p class="art-description">A mesmerizing blend of algorithmic patterns and organic flow, representing the perfect balance between technology and nature.</p>
+                        <p class="art-description">A piece that explores the relationship between structured patterns and natural flow. Created during late-night sessions, playing with color gradients and geometric forms.</p>
                         <div class="art-details">
                             <span class="art-type">Digital Art</span>
                             <span class="art-size">4K Resolution</span>
@@ -237,23 +244,23 @@
                 
                 <div class="featured-item">
                     <div class="featured-image">
-                        <img src="pic2.jpg" alt="Cyber Dreams" class="art-image">
+                        <img src="images/pic2.jpg" alt="Urban Dreams" class="art-image">
                         <div class="image-overlay">
-                            <div class="preview-notice" onclick="showPreviewMessage('Cyber Dreams')">
+                            <div class="preview-notice" onclick="showPreviewMessage('Urban Dreams')">
                                 <i class="fas fa-eye"></i>
                                 <span>Preview Only</span>
                             </div>
                         </div>
                     </div>
                     <div class="featured-info">
-                        <h3>Cyber Dreams</h3>
-                        <p class="art-description">An exploration of futuristic landscapes through neural networks and machine learning, creating otherworldly visions of tomorrow.</p>
+                        <h3>Urban Dreams</h3>
+                        <p class="art-description">Inspired by the energy of city lights and urban landscapes. This piece captures the contrast between sharp architecture and flowing movement.</p>
                         <div class="art-details">
-                            <span class="art-type">AI Generated</span>
+                            <span class="art-type">Mixed Media</span>
                             <span class="art-size">Ultra HD</span>
                         </div>
                         <div class="featured-actions">
-                            <button class="buy-btn" onclick="buyArt('Cyber Dreams')">
+                            <button class="buy-btn" onclick="buyArt('Urban Dreams')">
                                 <i class="fab fa-whatsapp"></i>
                                 <span>Buy Now</span>
                             </button>
@@ -275,7 +282,7 @@
                 <div class="instagram-feed">
                     <div class="instagram-post">
                         <div class="post-image">
-                            <canvas class="feed-canvas" data-art="spiral"></canvas>
+                            <img src="images/Gallery1.jpg" alt="Instagram Post" class="post-img" loading="lazy">
                         </div>
                         <div class="post-overlay">
                             <i class="fab fa-instagram"></i>
@@ -283,7 +290,7 @@
                     </div>
                     <div class="instagram-post">
                         <div class="post-image">
-                            <canvas class="feed-canvas" data-art="grid"></canvas>
+                            <img src="images/gallery2.jpg" alt="Instagram Post" class="post-img" loading="lazy">
                         </div>
                         <div class="post-overlay">
                             <i class="fab fa-instagram"></i>
@@ -291,7 +298,7 @@
                     </div>
                     <div class="instagram-post">
                         <div class="post-image">
-                            <canvas class="feed-canvas" data-art="bloom"></canvas>
+                            <img src="images/gallery3.jpg" alt="Instagram Post" class="post-img" loading="lazy">
                         </div>
                         <div class="post-overlay">
                             <i class="fab fa-instagram"></i>
@@ -299,7 +306,7 @@
                     </div>
                     <div class="instagram-post">
                         <div class="post-image">
-                            <canvas class="feed-canvas" data-art="matrix"></canvas>
+                            <img src="images/gallery4.jpg" alt="Instagram Post" class="post-img" loading="lazy">
                         </div>
                         <div class="post-overlay">
                             <i class="fab fa-instagram"></i>
@@ -316,29 +323,87 @@
         </div>
     </section>
 
+    <!-- Subscribe Section -->
+    <section id="subscribe" class="subscribe">
+        <div class="floating-icons">
+            <div class="icon-orbit">
+                <div class="orbit-icon">📧</div>
+                <div class="orbit-icon">🎨</div>
+                <div class="orbit-icon">⚡</div>
+                <div class="orbit-icon">🚀</div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="subscribe-content">
+                <div class="subscribe-info">
+                    <div class="section-header">
+                        <h2 class="section-title">Stay in the Creative Loop</h2>
+                        <p class="section-subtitle">Get exclusive access to new artworks, behind-the-scenes content, and tech-art tutorials</p>
+                    </div>
+                    <div class="subscribe-benefits">
+                        <div class="benefit-item">
+                            <i class="fas fa-palette"></i>
+                            <span>First access to new digital artworks</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Exclusive tech-art tutorials & tips</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Behind-the-scenes creative process</span>
+                        </div>
+                    </div>
+                    <form class="subscribe-form">
+                        <div class="form-container">
+                            <div class="input-group">
+                                <input type="email" id="subscribe-email" placeholder="Enter your email address" required>
+                                <button type="submit" class="subscribe-btn">
+                                    <span>Subscribe</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                            <p class="subscribe-note">
+                                <i class="fas fa-shield-alt"></i>
+                                We respect your privacy. Unsubscribe at any time.
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Let's Create Together</h2>
-                <p class="section-subtitle">Ready to bring your vision to digital life?</p>
+                <p class="section-subtitle">Have a project in mind? Let's chat about it</p>
             </div>
             <div class="contact-content">
                 <div class="contact-info">
                     <h3>Collaborate With Us</h3>
-                    <p>Whether you're looking for custom digital art, interactive experiences, or tech-art collaborations, we're here to push creative boundaries together.</p>
+                    <p>I love working on creative projects! Whether it's custom artwork, web design, or something completely new - let's explore what we can build together.</p>
                     <div class="contact-methods">
                         <div class="contact-method">
                             <i class="fas fa-envelope"></i>
-                            <span>atalesedavid3@gmail.com</span>
+                            <a href="mailto:datsartinfo@gmail.com" style="color:inherit;text-decoration:none;">datsartinfo@gmail.com</a>
                         </div>
                         <div class="contact-method">
-                            <i class="fab fa-instagram"></i>
-                            <span>@dat_sart</span>
+                                    <i class="fab fa-instagram"></i>
+                                    <span> <a href="https://www.instagram.com/dat_sart" target="_blank" title="Instagram" style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:1rem;"> @dat_sart </a></span>
+                                </a>
                         </div>
                         <div class="contact-method">
                             <i class="fas fa-globe"></i>
                             <span>Based in Kwara State, Nigeria</span>
+                        </div>
+                        <div class="contact-method">
+                            <a href="https://wa.me/2348023088491" target="_blank" title="Chat on WhatsApp" style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>+2348023088491</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -363,7 +428,7 @@
                     </div>
                     <div class="form-group">
                         <textarea id="message" required></textarea>
-                        <label for="message">Tell us about your vision</label>
+                        <label for="message">Tell us about your project</label>
                     </div>
                     <button type="submit" class="submit-btn">
                         <span>Send Message</span>
@@ -376,42 +441,82 @@
 
     <!-- Footer -->
     <footer class="footer">
+        <div class="footer-wave"></div>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <span class="footer-logo">DAT'S ART</span>
-                    <p>Bringing Technology into Art</p>
+                    <div class="brand-logo">
+                        <img src="images/pfp-art.jpg" alt="Dat's Art Logo" class="footer-logo-img">
+                        <div class="brand-text">
+                            <span class="footer-logo">DAT'S ART</span>
+                            <p class="brand-tagline">Bringing Technology into Art</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="footer-links">
                     <h4>Navigate</h4>
-                    <a href="#home">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#gallery">Gallery</a>
-                    <a href="#featured">Featured</a>
-                    <a href="#instagram">Instagram</a>
+                    <div class="links-grid">
+                        <a href="#home">Home</a>
+                        <a href="#about">About</a>
+                        <a href="#gallery">Gallery</a>
+                        <a href="#featured">Featured</a>
+                        <a href="#instagram">Instagram</a>
+                        <a href="#subscribe">Subscribe</a>
+                    </div>
                 </div>
-                <div class="footer-social">
-                    <h4>Connect</h4>
-                    <div class="social-links">
-                        <a href="https://www.instagram.com/dat_sart" target="_blank">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" target="_blank">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" target="_blank">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
+                <div class="footer-contact">
+                    <h4>Get In Touch</h4>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <a href="mailto:datsartinfo@gmail.com" style="color:inherit;text-decoration:none;">datsartinfo@gmail.com</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Kwara State, Nigeria</span>
+                        </div>
+                        <div class="contact-item">
+                            <a href="https://wa.me/2348023088491" target="_blank" title="Chat on WhatsApp" style="color:inherit;text-decoration:none;display:flex;align-items:center;gap:0.5rem;">
+                                <i class="fab fa-whatsapp"></i>
+                                <span>+2348023088491</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="footer-social">
+                        <h4>Follow Our Journey</h4>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/dat_sart" target="_blank" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                                <a href="https://x.com/DatsmartPro" target="_blank" title="Twitter">
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Dat's Art. All rights reserved. | Crafted with 💖 and code</p>
+                <div class="footer-bottom-content">
+                    <p>&copy; 2024 Dat's Art. All rights reserved.</p>
+                    <div class="footer-made-with">
+                        <span>Crafted with</span>
+                        <i class="fas fa-heart heart-icon"></i>
+                        <span>and code</span>
+                    </div>
+                    <div class="back-to-top">
+                        <button onclick="scrollToTop()" class="back-to-top-btn">
+                            <i class="fas fa-chevron-up"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Scripts -->
+    <script src="scripts/performance-monitor.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/animations.js"></script>
     <script src="scripts/gallery.js"></script>

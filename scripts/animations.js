@@ -1,17 +1,58 @@
 // ===== ANIMATIONS.JS - Canvas animations and visual effects =====
 
+// Performance variables
+let isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let frameCount = 0;
+let lastFrameTime = 0;
+const targetFPS = 60;
+const frameInterval = 1000 / targetFPS;
+
+// Enhanced performance optimizer
+const animationPerformance = {
+    visibilityStates: new WeakMap(),
+    frameSkipCounters: new WeakMap(),
+    lastUpdateTimes: new WeakMap(),
+    
+    shouldSkipFrame(instance, maxSkip = 2) {
+        const skipCount = this.frameSkipCounters.get(instance) || 0;
+        if (skipCount < maxSkip) {
+            this.frameSkipCounters.set(instance, skipCount + 1);
+            return true;
+        } else {
+            this.frameSkipCounters.set(instance, 0);
+            return false;
+        }
+    },
+    
+    throttleUpdate(instance, callback, interval = 16) {
+        const now = performance.now();
+        const lastUpdate = this.lastUpdateTimes.get(instance) || 0;
+        
+        if (now - lastUpdate >= interval) {
+            this.lastUpdateTimes.set(instance, now);
+            callback();
+        }
+    }
+};
+
 // Animation classes and functions
 class CanvasAnimation {
     constructor(canvas, options = {}) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = canvas.getContext('2d', { alpha: false, desynchronized: true });
         this.width = canvas.width = canvas.offsetWidth;
         this.height = canvas.height = canvas.offsetHeight;
         this.options = { ...this.defaultOptions, ...options };
         this.animationId = null;
         this.isPlaying = false;
+        this.isVisible = true;
+        this.frameSkip = 0;
+        this.maxFrameSkip = isReducedMotion ? 5 : 2;
+        this.lastRenderTime = 0;
         
         this.setupCanvas();
+        this.setupVisibilityDetection();
+        this.setupPerformanceOptimizations();
         this.init();
     }
     
@@ -19,14 +60,71 @@ class CanvasAnimation {
         return {
             backgroundColor: 'transparent',
             colors: ['#00ffff', '#ff0080', '#00ff80', '#ffffff'],
-            speed: 1,
-            particleCount: 50
+            speed: isReducedMotion ? 0.5 : 1,
+            particleCount: isReducedMotion ? 15 : Math.min(30, Math.floor(this.width * this.height / 10000))
         };
     }
     
     setupCanvas() {
+        // Enhanced GPU acceleration settings
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.imageSmoothingQuality = 'high';
+        
+        // Force hardware acceleration
+        this.canvas.style.transform = 'translate3d(0, 0, 0)';
+        this.canvas.style.backfaceVisibility = 'hidden';
+        this.canvas.style.willChange = 'auto';
+        
+        // Set canvas as opaque for better performance
+        if (this.options.backgroundColor !== 'transparent') {
+            this.canvas.style.backgroundColor = this.options.backgroundColor;
+        }
+    }
+    
+    setupVisibilityDetection() {
+        // Enhanced intersection observer with better thresholds
+        if (typeof IntersectionObserver !== 'undefined') {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    this.isVisible = entry.isIntersecting && entry.intersectionRatio > 0.1;
+                    
+                    if (this.isVisible && !this.isPlaying) {
+                        this.start();
+                    } else if (!this.isVisible && this.isPlaying) {
+                        this.pause();
+                    }
+                });
+            }, { 
+                threshold: [0.0, 0.1, 0.5],
+                rootMargin: '50px'
+            });
+            
+            observer.observe(this.canvas);
+        }
+        
+        // Page visibility API for better performance
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.pause();
+            } else if (this.isVisible) {
+                this.start();
+            }
+        });
+    }
+    
+    setupPerformanceOptimizations() {
+        // Precompute common values
+        this.centerX = this.width / 2;
+        this.centerY = this.height / 2;
+        
+        // Setup object pools for better memory management
+        this.setupObjectPools();
+    }
+    
+    setupObjectPools() {
+        // Override in subclasses if needed
+        this.particlePool = [];
+        this.activeParticles = [];
     }
     
     init() {
@@ -34,7 +132,7 @@ class CanvasAnimation {
     }
     
     start() {
-        if (!this.isPlaying) {
+        if (!this.isPlaying && this.isVisible && !document.hidden) {
             this.isPlaying = true;
             this.animate();
         }
@@ -47,17 +145,44 @@ class CanvasAnimation {
         }
     }
     
+    pause() {
+        this.isPlaying = false;
+        if (this.animationId) {
+            cancelAnimationFrame(this.animationId);
+        }
+    }
+    
     animate() {
-        if (!this.isPlaying) return;
+        if (!this.isPlaying || !this.isVisible || document.hidden) return;
         
-        this.clear();
-        this.update();
-        this.draw();
+        const currentTime = performance.now();
+        
+        // Enhanced frame rate limiting
+        if (currentTime - this.lastRenderTime < frameInterval) {
+            this.animationId = requestAnimationFrame(() => this.animate());
+            return;
+        }
+        
+        // Dynamic frame skipping based on performance
+        if (animationPerformance.shouldSkipFrame(this, this.maxFrameSkip)) {
+            this.animationId = requestAnimationFrame(() => this.animate());
+            return;
+        }
+        
+        this.lastRenderTime = currentTime;
+        
+        // Use performance throttling for heavy operations
+        animationPerformance.throttleUpdate(this, () => {
+            this.clear();
+            this.update();
+            this.draw();
+        });
         
         this.animationId = requestAnimationFrame(() => this.animate());
     }
     
     clear() {
+        // More efficient clearing
         this.ctx.clearRect(0, 0, this.width, this.height);
     }
     
@@ -70,8 +195,18 @@ class CanvasAnimation {
     }
     
     resize() {
-        this.width = this.canvas.width = this.canvas.offsetWidth;
-        this.height = this.canvas.height = this.canvas.offsetHeight;
+        const newWidth = this.canvas.offsetWidth;
+        const newHeight = this.canvas.offsetHeight;
+        
+        if (newWidth !== this.width || newHeight !== this.height) {
+            this.width = this.canvas.width = newWidth;
+            this.height = this.canvas.height = newHeight;
+            this.centerX = this.width / 2;
+            this.centerY = this.height / 2;
+            
+            // Update particle count based on new size
+            this.options.particleCount = Math.min(50, Math.floor(this.width * this.height / 10000));
+        }
     }
 }
 
@@ -79,106 +214,144 @@ class CanvasAnimation {
 class HeroAnimation extends CanvasAnimation {
     init() {
         this.particles = [];
-        this.mouseX = this.width / 2;
-        this.mouseY = this.height / 2;
+        this.connections = [];
+        this.mouseX = this.centerX;
+        this.mouseY = this.centerY;
         this.time = 0;
+        this.mouseInteraction = false;
         
-        // Create particles
-        for (let i = 0; i < this.options.particleCount; i++) {
+        // Create optimized particle pool
+        this.createParticlePool();
+        
+        // Optimized mouse interaction with throttling
+        let mouseThrottled = false;
+        this.canvas.addEventListener('mousemove', (e) => {
+            if (!mouseThrottled) {
+                mouseThrottled = true;
+                requestAnimationFrame(() => {
+                    const rect = this.canvas.getBoundingClientRect();
+                    this.mouseX = e.clientX - rect.left;
+                    this.mouseY = e.clientY - rect.top;
+                    this.mouseInteraction = true;
+                    mouseThrottled = false;
+                });
+            }
+        });
+        
+        this.canvas.addEventListener('mouseleave', () => {
+            this.mouseInteraction = false;
+        });
+    }
+    
+    createParticlePool() {
+        const particleCount = Math.min(this.options.particleCount, 80); // Cap particle count
+        
+        for (let i = 0; i < particleCount; i++) {
             this.particles.push(this.createParticle());
         }
-        
-        // Mouse interaction
-        this.canvas.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            this.mouseX = e.clientX - rect.left;
-            this.mouseY = e.clientY - rect.top;
-        });
     }
     
     createParticle() {
         return {
             x: Math.random() * this.width,
             y: Math.random() * this.height,
-            size: Math.random() * 3 + 1,
-            speedX: (Math.random() - 0.5) * 0.5,
-            speedY: (Math.random() - 0.5) * 0.5,
+            size: Math.random() * 2 + 0.5, // Smaller particles for better performance
+            speedX: (Math.random() - 0.5) * 0.3, // Reduced speed for smoother animation
+            speedY: (Math.random() - 0.5) * 0.3,
             color: this.options.colors[Math.floor(Math.random() * this.options.colors.length)],
-            alpha: Math.random() * 0.5 + 0.3,
+            alpha: Math.random() * 0.4 + 0.2, // Reduced alpha for subtle effect
             pulse: Math.random() * Math.PI * 2
         };
     }
     
     update() {
-        this.time += 0.01;
+        this.time += 0.005; // Reduced time increment
         
-        this.particles.forEach(particle => {
+        // Batch particle updates for better performance
+        for (let i = 0; i < this.particles.length; i++) {
+            const particle = this.particles[i];
+            
             // Move particles
             particle.x += particle.speedX;
             particle.y += particle.speedY;
             
-            // Mouse attraction
-            const dx = this.mouseX - particle.x;
-            const dy = this.mouseY - particle.y;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            
-            if (distance < 100) {
-                const force = (100 - distance) / 100;
-                particle.x += dx * force * 0.01;
-                particle.y += dy * force * 0.01;
+            // Mouse interaction (only when mouse is actively moving)
+            if (this.mouseInteraction) {
+                const dx = this.mouseX - particle.x;
+                const dy = this.mouseY - particle.y;
+                const distance = dx * dx + dy * dy; // Avoid sqrt for performance
+                
+                if (distance < 10000) { // 100px squared
+                    const force = (10000 - distance) / 10000;
+                    particle.x += dx * force * 0.005;
+                    particle.y += dy * force * 0.005;
+                }
             }
             
-            // Boundary check
-            if (particle.x < 0 || particle.x > this.width) particle.speedX *= -1;
-            if (particle.y < 0 || particle.y > this.height) particle.speedY *= -1;
-            
-            // Keep in bounds
-            particle.x = Math.max(0, Math.min(this.width, particle.x));
-            particle.y = Math.max(0, Math.min(this.height, particle.y));
+            // Boundary handling with bounce
+            if (particle.x <= 0 || particle.x >= this.width) {
+                particle.speedX *= -0.8;
+                particle.x = Math.max(0, Math.min(this.width, particle.x));
+            }
+            if (particle.y <= 0 || particle.y >= this.height) {
+                particle.speedY *= -0.8;
+                particle.y = Math.max(0, Math.min(this.height, particle.y));
+            }
             
             // Update pulse
-            particle.pulse += 0.02;
-        });
+            particle.pulse += 0.01;
+        }
     }
     
     draw() {
-        // Draw connections
-        this.drawConnections();
+        // Draw connections first (less frequently updated)
+        if (frameCount % 3 === 0) { // Update connections every 3 frames
+            this.drawConnections();
+        }
         
-        // Draw particles
-        this.particles.forEach(particle => {
-            const pulseFactor = Math.sin(particle.pulse) * 0.3 + 0.7;
+        // Draw particles with batched operations
+        this.ctx.save();
+        
+        for (let i = 0; i < this.particles.length; i++) {
+            const particle = this.particles[i];
+            const pulseFactor = Math.sin(particle.pulse) * 0.2 + 0.8;
             
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.size * pulseFactor, 0, Math.PI * 2);
             this.ctx.fillStyle = particle.color + Math.floor(particle.alpha * 255).toString(16).padStart(2, '0');
             this.ctx.fill();
-            
-            // Add glow effect
-            this.ctx.shadowColor = particle.color;
-            this.ctx.shadowBlur = 10;
-            this.ctx.fill();
-            this.ctx.shadowBlur = 0;
-        });
+        }
+        
+        this.ctx.restore();
+        frameCount++;
     }
     
     drawConnections() {
-        for (let i = 0; i < this.particles.length; i++) {
-            for (let j = i + 1; j < this.particles.length; j++) {
+        // Limit connection calculations for performance
+        const maxConnections = 100;
+        let connectionCount = 0;
+        
+        this.ctx.save();
+        this.ctx.strokeStyle = 'rgba(0, 255, 255, 0.15)';
+        this.ctx.lineWidth = 0.5;
+        
+        for (let i = 0; i < this.particles.length && connectionCount < maxConnections; i++) {
+            for (let j = i + 1; j < this.particles.length && connectionCount < maxConnections; j++) {
                 const dx = this.particles[i].x - this.particles[j].x;
                 const dy = this.particles[i].y - this.particles[j].y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                const distanceSquared = dx * dx + dy * dy;
                 
-                if (distance < 100) {
+                if (distanceSquared < 6400) { // 80px squared for better performance
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
-                    this.ctx.strokeStyle = `rgba(0, 255, 255, ${0.2 * (1 - distance / 100)})`;
-                    this.ctx.lineWidth = 1;
                     this.ctx.stroke();
+                    connectionCount++;
                 }
             }
         }
+        
+        this.ctx.restore();
     }
 }
 
@@ -420,59 +593,6 @@ class MandalaAnimation extends CanvasAnimation {
     }
 }
 
-// ===== LOADING ANIMATION =====
-class LoadingAnimation extends CanvasAnimation {
-    init() {
-        this.particles = [];
-        this.time = 0;
-        
-        for (let i = 0; i < 50; i++) {
-            this.particles.push({
-                angle: (i / 50) * Math.PI * 2,
-                radius: Math.random() * 50 + 50,
-                speed: Math.random() * 0.02 + 0.01,
-                size: Math.random() * 3 + 1,
-                color: this.options.colors[Math.floor(Math.random() * this.options.colors.length)]
-            });
-        }
-    }
-    
-    update() {
-        this.time += 0.02;
-        
-        this.particles.forEach(particle => {
-            particle.angle += particle.speed;
-        });
-    }
-    
-    draw() {
-        const centerX = this.width / 2;
-        const centerY = this.height / 2;
-        
-        this.particles.forEach(particle => {
-            const x = centerX + Math.cos(particle.angle) * particle.radius;
-            const y = centerY + Math.sin(particle.angle) * particle.radius;
-            
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, particle.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = particle.color;
-            this.ctx.fill();
-            
-            // Trail effect
-            this.ctx.shadowColor = particle.color;
-            this.ctx.shadowBlur = 10;
-            this.ctx.fill();
-            this.ctx.shadowBlur = 0;
-        });
-        
-        // Central logo placeholder
-        this.ctx.beginPath();
-        this.ctx.arc(centerX, centerY, 20, 0, Math.PI * 2);
-        this.ctx.fillStyle = '#00ffff';
-        this.ctx.fill();
-    }
-}
-
 // ===== ANIMATION MANAGER =====
 class AnimationManager {
     constructor() {
@@ -498,11 +618,8 @@ class AnimationManager {
             }));
         }
         
-        // Loading animation
-        const loadingCanvas = document.getElementById('loading-canvas');
-        if (loadingCanvas) {
-            this.animations.set('loading', new LoadingAnimation(loadingCanvas));
-        }
+        // Loading animation is now handled by CSS morphing shape
+        // No canvas needed for loading screen
         
         // Gallery animations
         this.initializeGalleryAnimations();
