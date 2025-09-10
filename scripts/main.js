@@ -646,7 +646,7 @@ function animateSubscriberCount() {
     }, 20);
 }
 
-function handleSubscribeSubmit(e) {
+async function handleSubscribeSubmit(e) {
     e.preventDefault();
     
     const email = elements.subscribeEmail.value;
@@ -664,19 +664,42 @@ function handleSubscribeSubmit(e) {
     submitBtn.style.opacity = '0.7';
     submitBtn.disabled = true;
     
-    // Simulate subscription process
-    setTimeout(() => {
-        showSubscribeMessage('Thank you for subscribing! 🎨', 'success');
-        elements.subscribeEmail.value = '';
+    try {
+        // Call Mailchimp API via Vercel serverless function
+        const response = await fetch('/api/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email })
+        });
         
-        // Reset button
+        const result = await response.json();
+        
+        if (result.success) {
+            if (result.already_subscribed) {
+                showSubscribeMessage('You\'re already part of our creative community! 🎨', 'success');
+            } else {
+                showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for confirmation.', 'success');
+                updateSubscriberCount();
+                
+                // Track successful subscription (optional analytics)
+                trackSubscription(email);
+            }
+            elements.subscribeEmail.value = '';
+        } else {
+            showSubscribeMessage(result.message || 'Something went wrong. Please try again.', 'error');
+        }
+        
+    } catch (error) {
+        console.error('Subscription error:', error);
+        showSubscribeMessage('Network error. Please check your connection and try again.', 'error');
+    } finally {
+        // Reset button state
         submitBtn.querySelector('span').textContent = originalText;
         submitBtn.style.opacity = '1';
         submitBtn.disabled = false;
-        
-        // Update subscriber count
-        updateSubscriberCount();
-    }, 1500);
+    }
 }
 
 function isValidEmail(email) {
@@ -713,6 +736,30 @@ function updateSubscriberCount() {
     if (countElement) {
         const current = parseInt(countElement.textContent);
         countElement.textContent = current + 1;
+    }
+}
+
+// Track successful subscriptions for analytics
+function trackSubscription(email) {
+    try {
+        // Google Analytics tracking (if available)
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'newsletter_subscription', {
+                event_category: 'engagement',
+                event_label: 'newsletter',
+                value: 1
+            });
+        }
+        
+        // Custom analytics tracking
+        console.log('Newsletter subscription tracked:', {
+            email: email.replace(/(.{2}).*@/, '$1***@'), // Anonymize for logging
+            timestamp: new Date().toISOString(),
+            source: 'website_footer'
+        });
+        
+    } catch (error) {
+        console.warn('Analytics tracking failed:', error);
     }
 }
 
@@ -926,3 +973,383 @@ function scrollToTop() {
 
 // Make scrollToTop globally available
 window.scrollToTop = scrollToTop;
+
+// ===== GALLERY FUNCTIONS =====
+
+// Gallery interactions
+function viewGalleryArt(imageName) {
+    console.log('Opening gallery art:', imageName); // Debug log
+    
+    // Create modal overlay
+    const modal = document.createElement('div');
+    modal.className = 'gallery-modal';
+    modal.innerHTML = `
+        <div class="gallery-modal-backdrop" onclick="closeGalleryModal()"></div>
+        <div class="gallery-modal-content">
+            <button class="gallery-modal-close" onclick="closeGalleryModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="gallery-modal-image">
+                <img src="images/${imageName}" alt="Gallery Artwork" style="opacity: 1 !important; display: block !important; visibility: visible !important; max-width: 100%; max-height: 60vh; object-fit: contain;" onload="console.log('Image loaded successfully')" onerror="console.error('Image failed to load:', this.src)">
+            </div>
+            <div class="gallery-modal-info">
+                <h3>Free Digital Art</h3>
+                <p>This artwork is free to download and use. Feel free to share and enjoy!</p>
+                <div class="gallery-modal-actions">
+                    <button class="gallery-modal-btn" onclick="downloadFromModal('${imageName}')">
+                        <i class="fas fa-download"></i>
+                        <span>Download Full Size</span>
+                    </button>
+                    <button class="gallery-modal-btn" onclick="shareGalleryArt('${imageName}')">
+                        <i class="fas fa-share"></i>
+                        <span>Share</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    document.body.style.overflow = 'hidden';
+    
+    // Force immediate visibility
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    modal.style.display = 'block';
+    
+    // Animate in
+    setTimeout(() => {
+        modal.classList.add('gallery-modal-open');
+    }, 10);
+}
+
+function closeGalleryModal() {
+    const modal = document.querySelector('.gallery-modal');
+    if (modal) {
+        modal.classList.remove('gallery-modal-open');
+        setTimeout(() => {
+            document.body.removeChild(modal);
+            document.body.style.overflow = '';
+        }, 300);
+    }
+}
+
+function downloadGalleryArt(imageName, artTitle) {
+    const button = event.currentTarget;
+    const icon = button.querySelector('i');
+    const span = button.querySelector('span');
+    
+    // Show downloading state
+    button.classList.add('downloading');
+    icon.className = 'fas fa-spinner fa-spin';
+    span.textContent = 'Downloading...';
+    
+    // Prevent any default behavior
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+    }
+    
+    const filename = `${artTitle.replace(/\s+/g, '_')}_by_DatsArt.jpg`;
+    
+    // Method 1: Try XMLHttpRequest with responseType blob
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `images/${imageName}`, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const blob = xhr.response;
+            
+            // Create download using URL.createObjectURL
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                // IE/Edge support
+                window.navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                // Modern browsers
+                const url = window.URL.createObjectURL(blob);
+                const tempLink = document.createElement('a');
+                
+                // Make link completely invisible and non-interactive
+                tempLink.style.display = 'none';
+                tempLink.style.visibility = 'hidden';
+                tempLink.style.position = 'absolute';
+                tempLink.style.left = '-10000px';
+                tempLink.style.top = '-10000px';
+                tempLink.style.width = '0';
+                tempLink.style.height = '0';
+                tempLink.style.opacity = '0';
+                tempLink.style.pointerEvents = 'none';
+                
+                tempLink.href = url;
+                tempLink.download = filename;
+                tempLink.target = '_self';
+                
+                // Add multiple download attributes for maximum compatibility
+                tempLink.setAttribute('download', filename);
+                tempLink.setAttribute('href', url);
+                tempLink.setAttribute('target', '_self');
+                
+                document.body.appendChild(tempLink);
+                
+                // Use multiple click methods
+                setTimeout(() => {
+                    try {
+                        // Method 1: Direct click
+                        tempLink.click();
+                    } catch (e1) {
+                        try {
+                            // Method 2: Mouse event
+                            const clickEvent = new MouseEvent('click', {
+                                view: window,
+                                bubbles: false,
+                                cancelable: true
+                            });
+                            tempLink.dispatchEvent(clickEvent);
+                        } catch (e2) {
+                            try {
+                                // Method 3: Create event (older browsers)
+                                const evt = document.createEvent('MouseEvents');
+                                evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                                tempLink.dispatchEvent(evt);
+                            } catch (e3) {
+                                // Method 4: Location assignment (last resort)
+                                const downloadUrl = url + '?download=' + encodeURIComponent(filename);
+                                const downloadWindow = window.open(downloadUrl, '_blank');
+                                if (downloadWindow) {
+                                    downloadWindow.document.title = 'Downloading...';
+                                    setTimeout(() => downloadWindow.close(), 1000);
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Clean up after delay
+                    setTimeout(() => {
+                        if (tempLink && tempLink.parentNode) {
+                            tempLink.parentNode.removeChild(tempLink);
+                        }
+                        window.URL.revokeObjectURL(url);
+                    }, 1000);
+                }, 10);
+            }
+            
+            // Show success state
+            setTimeout(() => {
+                icon.className = 'fas fa-check';
+                span.textContent = 'Downloaded!';
+                createFloatingIcon(button, '📥');
+                
+                setTimeout(() => {
+                    button.classList.remove('downloading');
+                    icon.className = 'fas fa-download';
+                    span.textContent = 'Download';
+                }, 2000);
+            }, 500);
+        } else {
+            throw new Error('Download failed');
+        }
+    };
+    
+    xhr.onerror = function() {
+        console.error('XHR Download failed, trying fallback');
+        
+        // Final fallback: Force download using data URL
+        const img = new Image();
+        img.onload = function() {
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                // Convert to data URL
+                const dataURL = canvas.toDataURL('image/jpeg', 0.95);
+                
+                // Force download with data URL
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = filename;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (canvasError) {
+                // If all else fails, show instructions
+                alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
+            }
+        };
+        
+        img.onerror = function() {
+            alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
+        };
+        
+        img.src = `images/${imageName}`;
+        
+        // Reset button state
+        setTimeout(() => {
+            button.classList.remove('downloading');
+            icon.className = 'fas fa-download';
+            span.textContent = 'Download';
+        }, 1000);
+    };
+    
+    xhr.send();
+}
+
+function downloadFromModal(imageName) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+    }
+    
+    const filename = `${imageName.replace('.jpg', '')}_by_DatsArt.jpg`;
+    
+    // Use XMLHttpRequest for reliable download
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `images/${imageName}`, true);
+    xhr.responseType = 'blob';
+    
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            const blob = xhr.response;
+            
+            // Create download using URL.createObjectURL
+            if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+                // IE/Edge support
+                window.navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                // Modern browsers
+                const url = window.URL.createObjectURL(blob);
+                const tempLink = document.createElement('a');
+                
+                // Make link completely invisible
+                tempLink.style.display = 'none';
+                tempLink.style.visibility = 'hidden';
+                tempLink.style.position = 'absolute';
+                tempLink.style.left = '-10000px';
+                tempLink.style.top = '-10000px';
+                tempLink.style.opacity = '0';
+                tempLink.style.pointerEvents = 'none';
+                
+                tempLink.href = url;
+                tempLink.download = filename;
+                tempLink.target = '_self';
+                tempLink.setAttribute('download', filename);
+                
+                document.body.appendChild(tempLink);
+                
+                // Multiple click methods
+                setTimeout(() => {
+                    try {
+                        tempLink.click();
+                    } catch (e1) {
+                        try {
+                            const clickEvent = new MouseEvent('click', {
+                                view: window,
+                                bubbles: false,
+                                cancelable: true
+                            });
+                            tempLink.dispatchEvent(clickEvent);
+                        } catch (e2) {
+                            try {
+                                const evt = document.createEvent('MouseEvents');
+                                evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+                                tempLink.dispatchEvent(evt);
+                            } catch (e3) {
+                                const downloadUrl = url + '?download=' + encodeURIComponent(filename);
+                                const downloadWindow = window.open(downloadUrl, '_blank');
+                                if (downloadWindow) {
+                                    setTimeout(() => downloadWindow.close(), 1000);
+                                }
+                            }
+                        }
+                    }
+                    
+                    setTimeout(() => {
+                        if (tempLink && tempLink.parentNode) {
+                            tempLink.parentNode.removeChild(tempLink);
+                        }
+                        window.URL.revokeObjectURL(url);
+                    }, 1000);
+                }, 10);
+            }
+        }
+    };
+    
+    xhr.onerror = function() {
+        // Fallback instructions
+        alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
+    };
+    
+    xhr.send();
+    
+    // Show success message
+    const info = document.querySelector('.gallery-modal-info p');
+    const originalText = info.textContent;
+    info.textContent = 'Download started! Check your downloads folder.';
+    info.style.color = '#87CEEB';
+    
+    setTimeout(() => {
+        info.textContent = originalText;
+        info.style.color = '';
+    }, 3000);
+}
+
+function shareGalleryArt(imageName) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Check out this amazing digital art!',
+            text: 'Free digital art by Dat\'s Art',
+            url: window.location.href
+        });
+    } else {
+        // Fallback to copy to clipboard
+        const url = window.location.href + '#gallery';
+        navigator.clipboard.writeText(url).then(() => {
+            const button = event.currentTarget;
+            const span = button.querySelector('span');
+            const originalText = span.textContent;
+            span.textContent = 'Link Copied!';
+            
+            setTimeout(() => {
+                span.textContent = originalText;
+            }, 2000);
+        });
+    }
+}
+
+function createFloatingIcon(button, emoji) {
+    const icon = document.createElement('div');
+    icon.innerHTML = emoji;
+    icon.className = 'floating-icon';
+    
+    const rect = button.getBoundingClientRect();
+    icon.style.left = rect.left + rect.width / 2 + 'px';
+    icon.style.top = rect.top + 'px';
+    
+    document.body.appendChild(icon);
+    
+    // Animate
+    setTimeout(() => {
+        icon.style.transform = 'translateY(-50px) scale(1.5)';
+        icon.style.opacity = '0';
+    }, 10);
+    
+    // Remove after animation
+    setTimeout(() => {
+        if (icon.parentNode) {
+            document.body.removeChild(icon);
+        }
+    }, 1000);
+}
+
+// Make gallery functions globally available
+window.viewGalleryArt = viewGalleryArt;
+window.closeGalleryModal = closeGalleryModal;
+window.downloadGalleryArt = downloadGalleryArt;
+window.downloadFromModal = downloadFromModal;
+window.shareGalleryArt = shareGalleryArt;

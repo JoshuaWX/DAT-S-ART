@@ -69,8 +69,8 @@
                 </h1>
                 <p class="hero-subtitle">Creating art with technology, one pixel at a time</p>
                 <div class="hero-cta">
-                    <button class="cta-button primary" onclick="scrollToSection('gallery')">
-                        <span>Explore Gallery</span>
+                    <button class="cta-button primary" onclick="scrollToSection('featured')">
+                        <span>Explore Featured Art</span>
                         <i class="fas fa-arrow-right"></i>
                     </button>
                     <button class="cta-button secondary" onclick="scrollToSection('about')">
@@ -119,10 +119,13 @@
                     </div>
     
                 </div>
-                <!-- Portfolio Button -->
+                <!-- Portfolio Buttons -->
                 <div class="portfolio-btn-block">
                     <a href="https://datsartportfolio.carrd.co" target="_blank" rel="noopener" class="portfolio-btn">
                         View Full Portfolio
+                    </a>
+                    <a href="http://datsartsocials.carrd.co" target="_blank" rel="noopener" class="portfolio-btn">
+                        View Socials
                     </a>
                 </div>
             </div>
@@ -133,77 +136,115 @@
     <section id="gallery" class="gallery">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Digital Masterpieces</h2>
-                <p class="section-subtitle">My latest creative explorations</p>
-            </div>
-            <div class="gallery-filter">
-                <button class="filter-btn active" data-filter="all">All</button>
-                <button class="filter-btn" data-filter="digital">Digital</button>
-                <button class="filter-btn" data-filter="interactive">Interactive</button>
-                <button class="filter-btn" data-filter="mixed">Mixed Media</button>
-                <button class="filter-btn" data-filter="web">Web Art</button>
+                <h2 class="section-title">Art Gallery</h2>
+                <p class="section-subtitle">Free digital art collection - Download and enjoy!</p>
             </div>
             <div class="gallery-grid">
-                <div class="gallery-item masterpiece-item" data-category="digital">
-                    <div class="item-image">
-                        <img src="images/Gallery1.jpg" alt="Digital Masterpiece 1 - Abstract Flow" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Abstract Flow</h3>
-                        <p>Digital Art</p>
-                        <button class="view-btn" tabindex="0">View Details</button>
-                    </div>
-                </div>
-                <div class="gallery-item masterpiece-item" data-category="interactive">
-                    <div class="item-image">
-                        <img src="images/gallery2.jpg" alt="Digital Masterpiece 2 - Moving Colors" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Moving Colors</h3>
-                        <p>Interactive Experience</p>
-                        <button class="view-btn" tabindex="0">Interact</button>
-                    </div>
-                </div>
-                <div class="gallery-item masterpiece-item" data-category="mixed">
-                    <div class="item-image">
-                        <img src="images/gallery3.jpg" alt="Digital Masterpiece 3 - Color Dreams" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Color Dreams</h3>
-                        <p>Mixed Media</p>
-                        <button class="view-btn" tabindex="0">View Details</button>
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="images/gallery1.jpg" alt="Gallery Artwork 1" class="gallery-img" loading="lazy">
+                        <div class="gallery-title-overlay">
+                            <h4>Digital Vision</h4>
+                        </div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-info">
+                                <h3>Digital Vision</h3>
+                                <p>Abstract Digital Art</p>
+                            </div>
+                            <div class="gallery-actions">
+                                <button class="gallery-btn view-btn" onclick="viewGalleryArt('gallery1.jpg')">
+                                    <i class="fas fa-eye"></i>
+                                    <span>View</span>
+                                </button>
+                                <button class="gallery-btn download-btn" onclick="downloadGalleryArt('gallery1.jpg', 'Digital Vision')">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="gallery-item masterpiece-item" data-category="web">
-                    <div class="item-image">
-                        <img src="images/gallery4.jpg" alt="Digital Masterpiece 4 - Code Canvas" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Code Canvas</h3>
-                        <p>Web Art</p>
-                        <button class="view-btn" tabindex="0">Experience</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="digital">
-                    <div class="item-image">
-                        <img src="images/pic1.jpg" alt="Digital Harmony digital design" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Digital Harmony</h3>
-                        <p>Digital Design</p>
-                        <button class="view-btn" tabindex="0">View Details</button>
-                    </div>
-                </div>
-                <div class="gallery-item" data-category="interactive">
-                    <div class="item-image">
-                        <img src="images/pic2.jpg" alt="Motion Study interactive art" class="gallery-image" loading="lazy" width="400" height="300">
-                    </div>
-                    <div class="item-overlay">
-                        <h3>Motion Study</h3>
-                        <p>Interactive Art</p>
-                        <button class="view-btn" tabindex="0">Create</button>
+                
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="images/gallery2.jpg" alt="Gallery Artwork 2" class="gallery-img" loading="lazy">
+                        <div class="gallery-title-overlay">
+                            <h4>Neon Dreams</h4>
+                        </div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-info">
+                                <h3>Neon Dreams</h3>
+                                <p>Cyberpunk Art</p>
+                            </div>
+                            <div class="gallery-actions">
+                                <button class="gallery-btn view-btn" onclick="viewGalleryArt('gallery2.jpg')">
+                                    <i class="fas fa-eye"></i>
+                                    <span>View</span>
+                                </button>
+                                <button class="gallery-btn download-btn" onclick="downloadGalleryArt('gallery2.jpg', 'Neon Dreams')">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+                
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="images/gallery3.jpg" alt="Gallery Artwork 3" class="gallery-img" loading="lazy">
+                        <div class="gallery-title-overlay">
+                            <h4>Tech Fusion</h4>
+                        </div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-info">
+                                <h3>Tech Fusion</h3>
+                                <p>Mixed Media Art</p>
+                            </div>
+                            <div class="gallery-actions">
+                                <button class="gallery-btn view-btn" onclick="viewGalleryArt('gallery3.jpg')">
+                                    <i class="fas fa-eye"></i>
+                                    <span>View</span>
+                                </button>
+                                <button class="gallery-btn download-btn" onclick="downloadGalleryArt('gallery3.jpg', 'Tech Fusion')">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-item">
+                    <div class="gallery-image">
+                        <img src="images/gallery4.jpg" alt="Gallery Artwork 4" class="gallery-img" loading="lazy">
+                        <div class="gallery-title-overlay">
+                            <h4>Pixel Paradise</h4>
+                        </div>
+                        <div class="gallery-overlay">
+                            <div class="gallery-info">
+                                <h3>Pixel Paradise</h3>
+                                <p>Digital Composition</p>
+                            </div>
+                            <div class="gallery-actions">
+                                <button class="gallery-btn view-btn" onclick="viewGalleryArt('gallery4.jpg')">
+                                    <i class="fas fa-eye"></i>
+                                    <span>View</span>
+                                </button>
+                                <button class="gallery-btn download-btn" onclick="downloadGalleryArt('gallery4.jpg', 'Pixel Paradise')">
+                                    <i class="fas fa-download"></i>
+                                    <span>Download</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-cta">
+                <button class="gallery-cta-btn" onclick="scrollToSection('featured')">
+                    <span>Explore Premium Collection</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </div>
     </section>
@@ -282,7 +323,7 @@
                 <div class="instagram-feed">
                     <div class="instagram-post">
                         <div class="post-image">
-                            <img src="images/Gallery1.jpg" alt="Instagram Post" class="post-img" loading="lazy">
+                            <img src="images/gallery1.jpg" alt="Instagram Post" class="post-img" loading="lazy">
                         </div>
                         <div class="post-overlay">
                             <i class="fab fa-instagram"></i>
@@ -519,6 +560,5 @@
     <script src="scripts/performance-monitor.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/animations.js"></script>
-    <script src="scripts/gallery.js"></script>
 </body>
 </html>
