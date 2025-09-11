@@ -143,22 +143,20 @@ async function sendWelcomeEmail(subscriberEmail) {
         welcome_message: 'Welcome to the DAT\'S ART newsletter! You\'re now part of an exclusive community that explores the fascinating intersection of code and creativity.'
     };
 
-    // EmailJS API endpoint for server-side usage
-    const emailjsUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+    // EmailJS REST API endpoint for server-side usage
+    const emailjsUrl = `https://api.emailjs.com/api/v1.0/email/send`;
     
     const requestData = {
         service_id: EMAILJS_SERVICE_ID,
         template_id: EMAILJS_TEMPLATE_ID,
         user_id: EMAILJS_PUBLIC_KEY,
+        accessToken: EMAILJS_PRIVATE_KEY,
         template_params: templateParams
     };
 
-    // Add private key if available for better security and rate limits
-    if (EMAILJS_PRIVATE_KEY) {
-        requestData.accessToken = EMAILJS_PRIVATE_KEY;
-    }
-
     try {
+        console.log('EmailJS request data:', JSON.stringify(requestData, null, 2));
+        
         const response = await fetch(emailjsUrl, {
             method: 'POST',
             headers: {
@@ -167,8 +165,11 @@ async function sendWelcomeEmail(subscriberEmail) {
             body: JSON.stringify(requestData)
         });
 
+        console.log('EmailJS response status:', response.status);
+        
         if (!response.ok) {
             const errorText = await response.text();
+            console.error('EmailJS API error response:', errorText);
             throw new Error(`EmailJS API error: ${response.status} - ${errorText}`);
         }
 
@@ -177,6 +178,7 @@ async function sendWelcomeEmail(subscriberEmail) {
         return { success: true, response: result };
     } catch (error) {
         console.error('Failed to send welcome email via EmailJS:', error);
+        console.error('Error details:', error.message);
         throw error;
     }
 }
