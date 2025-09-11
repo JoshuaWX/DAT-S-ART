@@ -65,9 +65,12 @@ export default async function handler(req, res) {
         if (response.ok) {
             // Send welcome email after successful Mailchimp subscription
             try {
-                await sendWelcomeEmail(email);
+                console.log('Attempting to send welcome email to:', email);
+                const emailResult = await sendWelcomeEmail(email);
+                console.log('Welcome email sent successfully:', emailResult);
             } catch (emailError) {
                 console.error('Welcome email failed:', emailError);
+                console.error('EmailJS error details:', emailError.message);
                 // Don't fail the whole request if email fails
             }
 
