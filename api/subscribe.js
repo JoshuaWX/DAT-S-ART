@@ -108,91 +108,72 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
-// Send welcome email using Resend API
+// Send welcome email using EmailJS
 async function sendWelcomeEmail(subscriberEmail) {
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_vbar1qp';
+    const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || 'template_9980p4c';
+    const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || 'DuJICjw7gRklu_MSr';
+    const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY || 'm15c6kD6osYY3V2hrLmeA';
     
-    if (!RESEND_API_KEY) {
-        console.log('No Resend API key found, skipping welcome email');
+    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
+        console.log('EmailJS configuration missing, skipping welcome email');
         return;
     }
 
-    const welcomeEmailData = {
-        from: 'DAT\'S ART <noreply@yourdomain.com>', // You'll need to verify your domain
-        to: [subscriberEmail],
+    // Prepare template parameters for EmailJS
+    const templateParams = {
+        to_email: subscriberEmail,
+        to_name: subscriberEmail.split('@')[0], // Use email prefix as name
+        from_name: 'DAT\'S ART',
         subject: '🎨 Welcome to DAT\'S ART Newsletter!',
-        html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #c9a967, #b8956d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
-                .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #ddd; }
-                .logo { font-size: 24px; font-weight: bold; margin-bottom: 10px; }
-                .benefits { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-                .benefit { margin: 10px 0; padding: 5px 0; }
-                .cta { background: #c9a967; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block; margin: 20px 0; }
-                .footer { text-align: center; margin-top: 30px; color: #666; font-size: 12px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <div class="logo">DAT'S ART</div>
-                <h1>Welcome to the Newsletter! 🎨</h1>
-            </div>
-            
-            <div class="content">
-                <p>Hi there!</p>
-                
-                <p>Thank you for subscribing to <strong>DAT'S ART</strong> newsletter! You've just joined an exclusive community of art lovers.</p>
-                
-                <div class="benefits">
-                    <h3>Here's what you'll receive:</h3>
-                    <div class="benefit">✨ <strong>New Artwork Announcements</strong> - Be the first to see my latest creations</div>
-                    <div class="benefit">🎨 <strong>Behind-the-Scenes Content</strong> - Discover my creative process</div>
-                    <div class="benefit">💎 <strong>Exclusive Previews</strong> - Get sneak peeks before anyone else</div>
-                    <div class="benefit">📧 <strong>Monthly Art Updates</strong> - Curated content just for subscribers</div>
-                    <div class="benefit">🎁 <strong>Free Downloads</strong> - Access to exclusive digital art pieces</div>
-                </div>
-                
-                <p>Want to explore my current gallery? Check out my latest work:</p>
-                
-                <a href="https://yourdomain.com/#gallery" class="cta">View Gallery →</a>
-                
-                <p>Thanks again for joining the DAT'S ART community. I can't wait to share my artistic journey with you!</p>
-                
-                <p>Best regards,<br><strong>DAT'S ART</strong></p>
-            </div>
-            
-            <div class="footer">
-                <p>You're receiving this because you subscribed to DAT'S ART newsletter.<br>
-                You can unsubscribe anytime from your Mailchimp preferences.</p>
-            </div>
-        </body>
-        </html>
-        `
+        // Match your actual website URL from the template
+        website_url: 'https://datsart-official.vercel.app/',
+        gallery_url: 'https://datsart-official.vercel.app/#gallery',
+        // Additional data that might be useful in the template
+        subscriber_email: subscriberEmail,
+        signup_date: new Date().toLocaleDateString(),
+        current_year: new Date().getFullYear(),
+        // Social media links (you can update these with your actual links)
+        instagram_url: '#',
+        twitter_url: '#',
+        // Custom message if needed
+        welcome_message: 'Welcome to the DAT\'S ART newsletter! You\'re now part of an exclusive community that explores the fascinating intersection of code and creativity.'
     };
 
+    // EmailJS API endpoint for server-side usage
+    const emailjsUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+    
+    const requestData = {
+        service_id: EMAILJS_SERVICE_ID,
+        template_id: EMAILJS_TEMPLATE_ID,
+        user_id: EMAILJS_PUBLIC_KEY,
+        template_params: templateParams
+    };
+
+    // Add private key if available for better security and rate limits
+    if (EMAILJS_PRIVATE_KEY) {
+        requestData.accessToken = EMAILJS_PRIVATE_KEY;
+    }
+
     try {
-        const response = await fetch('https://api.resend.com/emails', {
+        const response = await fetch(emailjsUrl, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${RESEND_API_KEY}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(welcomeEmailData)
+            body: JSON.stringify(requestData)
         });
 
         if (!response.ok) {
-            throw new Error(`Resend API error: ${response.status}`);
+            const errorText = await response.text();
+            throw new Error(`EmailJS API error: ${response.status} - ${errorText}`);
         }
 
-        const result = await response.json();
-        console.log('Welcome email sent successfully:', result.id);
-        return result;
+        const result = await response.text(); // EmailJS returns plain text response
+        console.log('Welcome email sent successfully via EmailJS:', result);
+        return { success: true, response: result };
     } catch (error) {
-        console.error('Failed to send welcome email:', error);
+        console.error('Failed to send welcome email via EmailJS:', error);
         throw error;
     }
 }
