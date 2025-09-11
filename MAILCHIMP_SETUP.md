@@ -30,7 +30,15 @@
 MAILCHIMP_API_KEY = your_api_key_here
 MAILCHIMP_AUDIENCE_ID = your_audience_id_here  
 MAILCHIMP_SERVER_PREFIX = us1 (or your server prefix)
+RESEND_API_KEY = your_resend_api_key_here (for welcome emails)
 ```
+
+### 2b. Setup Welcome Email Service (Resend.com)
+
+1. Sign up for free at [Resend.com](https://resend.com)
+2. Verify your domain (or use their test domain for now)
+3. Generate an API key
+4. Add the API key to your Vercel environment variables as `RESEND_API_KEY`
 
 ### 3. Deploy to Vercel
 
@@ -53,25 +61,33 @@ git push origin main
 
 - ✅ Validates email addresses
 - ✅ Adds subscribers to your Mailchimp audience
+- ✅ **Sends instant welcome email confirmation** 📧
 - ✅ Handles duplicate subscriptions gracefully
 - ✅ Shows appropriate success/error messages
 - ✅ Tracks subscriptions for analytics
 - ✅ Tags subscribers as "website-subscriber"
+- ✅ Professional branded welcome emails
 - ✅ Serverless (no backend maintenance needed)
-- ✅ Professional and scalable
+- ✅ Works with Mailchimp FREE plan
 
 ## 🎨 Customization Options
 
+### Custom Welcome Email Features:
+- ✅ **Instant confirmation emails** (no paid plan needed!)
+- ✅ **Branded HTML design** with your colors (#c9a967)
+- ✅ **Professional layout** with your logo and messaging
+- ✅ **Call-to-action buttons** linking to your gallery
+- ✅ **Mobile-responsive** design
+
 ### Email Templates in Mailchimp:
-1. Create welcome email automation
-2. Set up confirmation emails
-3. Design newsletters with your branding
+1. Create regular newsletter campaigns (free plan)
+2. Design newsletters with your branding
+3. Send manual campaigns to your growing list
 
 ### Additional Features:
-- Double opt-in confirmation
 - Custom merge fields (name, interests, etc.)
-- Advanced segmentation
-- A/B testing for newsletters
+- Basic segmentation (free plan)
+- Campaign analytics and tracking
 
 ## 🔧 Troubleshooting
 
