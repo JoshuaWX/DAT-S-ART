@@ -77,7 +77,7 @@ export default async function handler(req, res) {
             // Success
             return res.status(200).json({ 
                 success: true,
-                message: 'Successfully subscribed to newsletter! Check your email for confirmation.',
+                message: 'Successfully subscribed to newsletter! 🎉 Welcome email is being sent - please check your Gmail inbox or Promotions tab within the next 5 minutes.',
                 subscriber_id: result.id
             });
         } else if (response.status === 400 && result.title === 'Member Exists') {
