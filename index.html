@@ -563,14 +563,7 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function(){
-            emailjs.init({
-                publicKey: "DuJICjw7gRklu_MSr",
-                blockHeadless: true,
-                limitRate: {
-                    id: 'app',
-                    throttle: 10000
-                }
-            });
+            emailjs.init("DuJICjw7gRklu_MSr");
         })();
     </script>
     <script src="scripts/performance-monitor.js"></script>
