@@ -134,6 +134,24 @@ function initializeNavigation() {
         scrollProgress = (winScroll / height) * 100;
     }
 
+    // Update active navigation link based on scroll position
+    function updateActiveNavLink() {
+        const scrollPos = window.scrollY + 100; // Offset for header height
+        
+        elements.navLinks.forEach(link => {
+            const section = document.querySelector(link.getAttribute('href'));
+            if (section) {
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
+                    elements.navLinks.forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            }
+        });
+    }
+
     // Optimized active navigation link update with intersection observer
     const sections = document.querySelectorAll('section[id]');
     const navObserver = new IntersectionObserver((entries) => {
