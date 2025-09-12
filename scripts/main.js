@@ -330,19 +330,51 @@ function filterGalleryItems(filterValue) {
 function initializeContactForm() {
     if (!elements.contactForm) return;
 
-    elements.contactForm.addEventListener('submit', (e) => {
+    elements.contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
+        // Get form data
         const formData = new FormData(elements.contactForm);
-        const formObject = {};
+        const submitBtn = elements.contactForm.querySelector('.submit-btn');
+        const originalText = submitBtn.innerHTML;
         
-        formData.forEach((value, key) => {
-            formObject[key] = value;
-        });
+        // Show loading state
+        submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
+        submitBtn.disabled = true;
+        
+        try {
+            // Prepare EmailJS template parameters
+            const templateParams = {
+                from_name: formData.get('name'),
+                from_email: formData.get('email'),
+                project_type: formData.get('project-type'),
+                message: formData.get('message'),
+                to_email: 'datsartinfo@gmail.com', // Your email
+                reply_to: formData.get('email'),
+                subject: `New Contact Form: ${formData.get('project-type')}`,
+                submission_date: new Date().toLocaleDateString()
+            };
 
-        // Simulate form submission
-        showNotification('Message sent successfully! We\'ll get back to you soon.', 'success');
-        elements.contactForm.reset();
+            // Send email using EmailJS
+            const response = await emailjs.send(
+                'service_vbar1qp',    // Your service ID
+                'template_y9o83w5',   // Your contact template ID
+                templateParams,
+                'DuJICjw7gRklu_MSr'  // Your public key
+            );
+
+            console.log('Contact form sent successfully:', response);
+            showNotification('Message sent successfully! 🎉 We\'ll get back to you within 24 hours.', 'success');
+            elements.contactForm.reset();
+            
+        } catch (error) {
+            console.error('Contact form failed:', error);
+            showNotification('Failed to send message. Please try again or contact us directly.', 'error');
+        } finally {
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
     });
 
     // Form field animations
