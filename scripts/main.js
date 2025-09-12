@@ -357,9 +357,11 @@ function initializeContactForm() {
 
             // Send email using EmailJS
             console.log('Sending contact form with params:', templateParams);
+            
+            // Use contact template
             const response = await emailjs.send(
                 'service_vbar1qp',    // Your service ID
-                'template_y9o83w5',   // Your contact template ID
+                'template_vuxvmlk',   // Your contact template ID
                 templateParams
             );
 
