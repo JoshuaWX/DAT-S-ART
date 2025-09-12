@@ -1417,3 +1417,7 @@ window.closeGalleryModal = closeGalleryModal;
 window.downloadGalleryArt = downloadGalleryArt;
 window.downloadFromModal = downloadFromModal;
 window.shareGalleryArt = shareGalleryArt;
+
+// ===== INSTAGRAM FEED (Using SociableKIT Widget) =====
+// Instagram feed is now handled by SociableKIT widget embedded in HTML
+// No JavaScript initialization needed - the widget handles everything automatically

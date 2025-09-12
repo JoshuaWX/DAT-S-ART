@@ -2825,17 +2825,109 @@ section {
 
 .post-overlay {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    color: rgba(255, 255, 255, 0.8);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(135, 206, 235, 0.3));
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
-    transition: all 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 15px;
 }
 
 .instagram-post:hover .post-overlay {
     opacity: 1;
+}
+
+.post-content {
+    text-align: center;
+    color: white;
+    padding: 1rem;
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.instagram-post:hover .post-content {
+    transform: translateY(0);
+}
+
+.post-content i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #87ceeb;
+}
+
+.post-caption {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+    opacity: 0.9;
+    max-width: 200px;
+}
+
+.video-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.video-indicator i {
+    color: white;
+    font-size: 1.2rem;
+    margin-left: 3px;
+}
+
+.instagram-post:hover .video-indicator {
+    background: rgba(135, 206, 235, 0.8);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Loading spinner styles */
+.instagram-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(135, 206, 235, 0.3);
+    border-top: 3px solid #87ceeb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.fallback-post {
+    border-color: rgba(255, 193, 7, 0.3) !important;
+}
+
+.fallback-post:hover {
+    border-color: rgba(255, 193, 7, 0.6) !important;
+    box-shadow: 0 10px 25px rgba(255, 193, 7, 0.2) !important;
 }
 
 .instagram-cta {
@@ -2859,6 +2951,214 @@ section {
 .instagram-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 10px 25px rgba(131, 58, 180, 0.4);
+}
+
+/* Instagram Loading State */
+.instagram-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(135, 206, 235, 0.2);
+    border-top: 3px solid #87CEEB;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Dynamic Instagram Posts */
+.instagram-feed a {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.instagram-feed a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(135, 206, 235, 0.3);
+}
+
+.instagram-feed img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.instagram-feed a:hover img {
+    transform: scale(1.05);
+}
+
+/* ===== SOCIABLEKIT WIDGET CUSTOMIZATION ===== */
+/* Override SociableKIT default styling to match our design */
+.sk-instagram-feed {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Grid layout for Instagram posts */
+.sk-instagram-feed .sk-instagram-feed-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+    gap: 1.5rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+/* Individual post styling */
+.sk-instagram-feed .sk-instagram-feed-item {
+    position: relative !important;
+    aspect-ratio: 1 !important;
+    border-radius: 15px !important;
+    overflow: hidden !important;
+    border: 2px solid rgba(135, 206, 235, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+.sk-instagram-feed .sk-instagram-feed-item:hover {
+    border-color: rgba(135, 206, 235, 0.5) !important;
+    box-shadow: 0 10px 25px rgba(135, 206, 235, 0.2) !important;
+}
+
+/* Post image styling */
+.sk-instagram-feed .sk-instagram-feed-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    transition: transform 0.3s ease, filter 0.3s ease !important;
+    border-radius: 15px !important;
+    border: none !important;
+}
+
+.sk-instagram-feed .sk-instagram-feed-item:hover img {
+    transform: scale(1.08) !important;
+    filter: brightness(0.9) !important;
+}
+
+/* Hide SociableKIT branding and unwanted elements */
+.sk-instagram-feed .sk-instagram-feed-header,
+.sk-instagram-feed .sk-instagram-feed-footer,
+.sk-instagram-feed .sk-watermark,
+.sk-instagram-feed .sk-branding,
+.sk-instagram-feed [class*="watermark"],
+.sk-instagram-feed [class*="branding"],
+.sk-instagram-feed [class*="powered"],
+.sk-instagram-feed [class*="logo"],
+.sk-instagram-feed [class*="profile"],
+.sk-instagram-feed [class*="stats"],
+.sk-instagram-feed [class*="followers"],
+.sk-instagram-feed [class*="bio"],
+.sk-instagram-feed [class*="username"],
+.sk-instagram-feed [class*="link"],
+.sk-instagram-feed .sk-instagram-profile,
+.sk-instagram-feed .sk-profile,
+.sk-instagram-feed .sk-stats,
+.sk-instagram-feed .sk-followers,
+.sk-instagram-feed .sk-bio {
+    display: none !important;
+}
+
+/* Post overlay for hover effects */
+.sk-instagram-feed .sk-instagram-feed-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(135, 206, 235, 0.3));
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 15px;
+    pointer-events: none;
+}
+
+.sk-instagram-feed .sk-instagram-feed-item:hover::after {
+    opacity: 1;
+}
+
+/* Instagram icon overlay */
+.sk-instagram-feed .sk-instagram-feed-item::before {
+    content: '\f16d';
+    font-family: 'Font Awesome 6 Brands';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #87ceeb;
+    font-size: 2rem;
+    z-index: 5;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sk-instagram-feed .sk-instagram-feed-item:hover::before {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* Remove any default text/captions from widget */
+.sk-instagram-feed .sk-instagram-feed-item-text,
+.sk-instagram-feed .sk-instagram-feed-item-caption,
+.sk-instagram-feed .sk-instagram-feed-item-content,
+.sk-instagram-feed .sk-instagram-feed-item-footer {
+    display: none !important;
+}
+
+/* Loading state styling */
+.sk-instagram-feed .sk-loading {
+    text-align: center !important;
+    padding: 60px 20px !important;
+    color: var(--text-color) !important;
+    background: transparent !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .sk-instagram-feed .sk-instagram-feed-container {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+        gap: 1rem !important;
+    }
+    
+    .sk-instagram-feed .sk-instagram-feed-item:hover img {
+        transform: scale(1.02) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .sk-instagram-feed .sk-instagram-feed-container {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.8rem !important;
+    }
+    
+    .sk-instagram-feed .sk-instagram-feed-item:hover img {
+        transform: none !important;
+        filter: brightness(1.05) !important;
+    }
 }
 
 /* SUBSCRIBE SECTION */
