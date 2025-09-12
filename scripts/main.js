@@ -356,11 +356,11 @@ function initializeContactForm() {
             };
 
             // Send email using EmailJS
+            console.log('Sending contact form with params:', templateParams);
             const response = await emailjs.send(
                 'service_vbar1qp',    // Your service ID
                 'template_y9o83w5',   // Your contact template ID
-                templateParams,
-                'DuJICjw7gRklu_MSr'  // Your public key
+                templateParams
             );
 
             console.log('Contact form sent successfully:', response);
@@ -369,7 +369,19 @@ function initializeContactForm() {
             
         } catch (error) {
             console.error('Contact form failed:', error);
-            showNotification('Failed to send message. Please try again or contact us directly.', 'error');
+            console.error('Error details:', error.message);
+            console.error('Error status:', error.status);
+            
+            let errorMessage = 'Failed to send message. Please try again or contact us directly.';
+            if (error.message && error.message.includes('network')) {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            } else if (error.status === 400) {
+                errorMessage = 'Invalid form data. Please check all fields and try again.';
+            } else if (error.status === 403) {
+                errorMessage = 'Service temporarily unavailable. Please contact us directly.';
+            }
+            
+            showNotification(errorMessage, 'error');
         } finally {
             // Reset button state
             submitBtn.innerHTML = originalText;
