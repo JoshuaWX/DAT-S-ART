@@ -266,7 +266,78 @@ body.no-custom-cursor {
     z-index: 10000;
     opacity: 1;
     transition: opacity 1s ease;
-}
+    }
+
+    /* Mobile Loading Animation Styles */
+    .mobile-loading-animation {
+        display: none;
+    }
+    .dot-loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .dot-loader span {
+        display: block;
+        width: 14px;
+        height: 14px;
+        background: #87CEEB;
+        border-radius: 50%;
+        opacity: 0.7;
+        animation: dot-bounce 1s infinite alternate;
+    }
+    .dot-loader span:nth-child(2) {
+        animation-delay: 0.2s;
+        background: #ff0080;
+    }
+    .dot-loader span:nth-child(3) {
+        animation-delay: 0.4s;
+        background: #00ff80;
+    }
+    .mobile-loading-text {
+        text-align: center;
+        color: #87CEEB;
+        font-size: 1.1rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+    @keyframes dot-bounce {
+        0% { transform: translateY(0); opacity: 0.7; }
+        50% { transform: translateY(-12px); opacity: 1; }
+        100% { transform: translateY(0); opacity: 0.7; }
+    }
+    
+
+    @media (max-width: 480px) {
+        #loading-screen {
+            padding: 0;
+        }
+        .loading-animation, #loading-morphing-shape, .loading-text {
+            display: none !important;
+        }
+        .mobile-loading-animation {
+            display: flex !important;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+            font-size: 1.2rem;
+        }
+           
+        }
+        .loading-text p {
+            font-size: 0.85rem;
+            margin-top: 6px;
+        }
+
 
 #loading-screen.loaded {
     opacity: 0;
