@@ -70,7 +70,7 @@
         <div class="hero-content">
             <div class="hero-text">
                 <h1 class="hero-title">
-                    <span class="line-1">WHERE CODE</span>
+                    <span class="line-1">WHERE TECH</span>
                     <span class="line-2">MEETS</span>
                     <span class="line-3 gradient-text">CREATIVITY</span>
                 </h1>
@@ -520,7 +520,7 @@
             </div>
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
-                    <p>&copy; 2024 Dat's Art. All rights reserved.</p>
+                    <p>&copy; 2025 Dat's Art. All rights reserved.</p>
                     <div class="footer-made-with">
                         <span>Crafted with</span>
                         <i class="fas fa-heart heart-icon"></i>
@@ -537,6 +537,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function(){
@@ -545,8 +546,21 @@
     </script>
 
     <script src="scripts/performance-monitor.js"></script>
+    <script src="scripts/cms-content.js"></script>
     <script src="scripts/main.js"></script>
     <script src="scripts/animations.js"></script>
     <script src='https://widgets.sociablekit.com/instagram-feed/widget.js' defer></script>
+    
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>

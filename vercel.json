@@ -2,6 +2,15 @@
   "functions": {
     "api/subscribe.js": {
       "maxDuration": 10
+    },
+    "api/collections.js": {
+      "maxDuration": 10
+    },
+    "api/cms-content.js": {
+      "maxDuration": 10
+    },
+    "api/settings.js": {
+      "maxDuration": 10
     }
   },
   "headers": [
@@ -21,6 +30,21 @@
           "value": "Content-Type, Authorization"
         }
       ]
+    },
+    {
+      "source": "/_data/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/admin",
+      "destination": "/admin/index.html"
     }
   ]
 }
