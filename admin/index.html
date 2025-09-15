@@ -14,7 +14,8 @@
     // Configure Netlify Identity for the specific site
     if (window.netlifyIdentity) {
       window.netlifyIdentity.init({
-        APIUrl: "https://kaleidoscopic-tanuki-14c719.netlify.app/.netlify/identity"
+        APIUrl: "https://kaleidoscopic-tanuki-14c719.netlify.app/.netlify/identity",
+        site_id: "7cc4f3db-2b6b-4598-8e60-edf09fa87ba9"
       });
       
       window.netlifyIdentity.on("init", user => {
