@@ -11,7 +11,12 @@
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
   <script>
+    // Configure Netlify Identity for the specific site
     if (window.netlifyIdentity) {
+      window.netlifyIdentity.init({
+        APIUrl: "https://kaleidoscopic-tanuki-14c719.netlify.app/.netlify/identity"
+      });
+      
       window.netlifyIdentity.on("init", user => {
         if (!user) {
           window.netlifyIdentity.on("login", () => {

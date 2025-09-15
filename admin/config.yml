@@ -1,6 +1,7 @@
 backend:
   name: git-gateway
   branch: main # Branch to update (optional; defaults to master)
+  site_domain: kaleidoscopic-tanuki-14c719.netlify.app
 
 # This line should *not* be indented
 publish_mode: editorial_workflow
