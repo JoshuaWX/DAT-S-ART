@@ -289,9 +289,7 @@ body.no-custom-cursor {
         display: flex;
         flex-direction: column;
     }
-    .container {
-        
-    } 
+    
     /* .hero {
         display: flex !important;
         flex-direction: column !important;

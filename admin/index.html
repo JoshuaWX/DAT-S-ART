@@ -3,18 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Redirecting to CMS...</title>
+  <title>Content Manager - Dat's Art</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
-  <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
-    <h1>Redirecting to Content Manager...</h1>
-    <p>You are being redirected to the Netlify CMS admin panel.</p>
-    <p>If you are not redirected automatically, <a href="https://datsartcms.netlify.app/admin">click here</a>.</p>
-  </div>
+  <!-- Include the script that builds the page and powers Netlify CMS -->
+  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
   <script>
-    // Redirect to Netlify CMS
-    window.location.href = "https://datsartcms.netlify.app/admin";
+    // Configure Netlify Identity for the specific site
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.init({
+        APIUrl: "https://datsartcms.netlify.app/.netlify/identity",
+        site_id: "7cc4f3db-2b6b-4598-8e60-edf09fa87ba9"
+      });
+      
+      window.netlifyIdentity.on("init", user => {
+        if (!user) {
+          window.netlifyIdentity.on("login", () => {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
   </script>
 </body>
 </html>

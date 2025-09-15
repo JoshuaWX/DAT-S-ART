@@ -552,8 +552,12 @@
     <script src='https://widgets.sociablekit.com/instagram-feed/widget.js' defer></script>
     
     <script>
-        // Netlify Identity widget (only needed if using identity features on main site)
         if (window.netlifyIdentity) {
+            window.netlifyIdentity.init({
+                APIUrl: "https://datsartcms.netlify.app/.netlify/identity",
+                site_id: "7cc4f3db-2b6b-4598-8e60-edf09fa87ba9"
+            });
+            
             window.netlifyIdentity.on("init", user => {
                 if (!user) {
                     window.netlifyIdentity.on("login", () => {
