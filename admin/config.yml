@@ -3,6 +3,7 @@ backend:
   branch: main # Branch to update (optional; defaults to master)
   site_domain: datsartcms.netlify.app
   site_id: 7cc4f3db-2b6b-4598-8e60-edf09fa87ba9
+  # This will save to GitHub directly, triggering Vercel (not Netlify) builds
 
 # This line should *not* be indented
 publish_mode: editorial_workflow

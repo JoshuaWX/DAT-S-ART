@@ -28,6 +28,7 @@ class CMSContentManager {
             const response = await fetch('/api/collections?collection=gallery');
             if (response.ok) {
                 this.galleryData = await response.json();
+                console.log('Gallery data loaded from API:', this.galleryData);
             }
         } catch (error) {
             console.warn('Could not load gallery content from API:', error);
@@ -67,6 +68,7 @@ class CMSContentManager {
             const response = await fetch('/api/collections?collection=featured');
             if (response.ok) {
                 this.featuredData = await response.json();
+                console.log('Featured data loaded from API:', this.featuredData);
             }
         } catch (error) {
             console.warn('Could not load featured content from API:', error);
