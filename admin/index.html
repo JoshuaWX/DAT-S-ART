@@ -7,6 +7,11 @@
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
+  <!-- Prevent automatic config loading -->
+  <script>
+    window.CMS_MANUAL_INIT = true;
+  </script>
+  
   <!-- Include the script that builds the page and powers Netlify CMS -->
   <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
   
@@ -27,11 +32,8 @@
       });
     }
 
-    // Embed CMS configuration directly in JavaScript to bypass config.yml loading issues
-    window.CMS_MANUAL_INIT = true;
-    
-    // Wait for CMS to load then initialize with embedded config
-    window.addEventListener('load', function() {
+    // Initialize CMS with embedded configuration
+    function initCMS() {
       if (window.CMS) {
         window.CMS.init({
           config: {
@@ -98,8 +100,18 @@
             ]
           }
         });
+      } else {
+        // Retry if CMS not loaded yet
+        setTimeout(initCMS, 100);
       }
-    });
+    }
+    
+    // Start initialization when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCMS);
+    } else {
+      initCMS();
+    }
   </script>
 </body>
 </html>
