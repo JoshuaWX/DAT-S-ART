@@ -39,29 +39,18 @@
           "value": "*"
         }
       ]
-    },
-    {
-      "source": "/admin/config.yml",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "text/yaml"
-        },
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        }
-      ]
     }
   ],
-  "rewrites": [
+  "redirects": [
     {
       "source": "/admin",
-      "destination": "/admin/index.html"
+      "destination": "https://datsartcms.netlify.app/admin",
+      "permanent": false
     },
     {
       "source": "/admin/",
-      "destination": "/admin/index.html"
+      "destination": "https://datsartcms.netlify.app/admin",
+      "permanent": false
     }
   ]
 }

@@ -3,115 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Content Manager - Dat's Art</title>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <title>Redirecting to CMS...</title>
 </head>
 <body>
-  <!-- Prevent automatic config loading -->
-  <script>
-    window.CMS_MANUAL_INIT = true;
-  </script>
-  
-  <!-- Include the script that builds the page and powers Netlify CMS -->
-  <script src="https://unpkg.com/netlify-cms@^2.0.0/dist/netlify-cms.js"></script>
+  <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+    <h1>Redirecting to Content Manager...</h1>
+    <p>You are being redirected to the Netlify CMS admin panel.</p>
+    <p>If you are not redirected automatically, <a href="https://datsartcms.netlify.app/admin">click here</a>.</p>
+  </div>
   
   <script>
-    // Configure Netlify Identity for the specific site
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.init({
-        APIUrl: "https://kaleidoscopic-tanuki-14c719.netlify.app/.netlify/identity",
-        site_id: "7cc4f3db-2b6b-4598-8e60-edf09fa87ba9"
-      });
-      
-      window.netlifyIdentity.on("init", user => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-
-    // Initialize CMS with embedded configuration
-    function initCMS() {
-      if (window.CMS) {
-        window.CMS.init({
-          config: {
-            backend: {
-              name: 'git-gateway',
-              branch: 'main',
-              site_domain: 'kaleidoscopic-tanuki-14c719.netlify.app',
-              site_id: '7cc4f3db-2b6b-4598-8e60-edf09fa87ba9'
-            },
-            publish_mode: 'editorial_workflow',
-            media_folder: 'images',
-            public_folder: '/images',
-            collections: [
-              {
-                name: 'gallery',
-                label: 'Gallery',
-                folder: '_data/gallery',
-                create: true,
-                slug: '{{slug}}',
-                fields: [
-                  { label: 'Title', name: 'title', widget: 'string' },
-                  { label: 'Description', name: 'description', widget: 'text' },
-                  { label: 'Image', name: 'image', widget: 'image' },
-                  { label: 'Category', name: 'category', widget: 'string', default: 'Digital Art' },
-                  { label: 'Featured', name: 'featured', widget: 'boolean', default: false },
-                  { label: 'Order', name: 'order', widget: 'number', default: 1 }
-                ]
-              },
-              {
-                name: 'featured',
-                label: 'Featured Art',
-                folder: '_data/featured',
-                create: true,
-                slug: '{{slug}}',
-                fields: [
-                  { label: 'Title', name: 'title', widget: 'string' },
-                  { label: 'Description', name: 'description', widget: 'text' },
-                  { label: 'Image', name: 'image', widget: 'image' },
-                  { label: 'Art Type', name: 'art_type', widget: 'string', default: 'Digital Art' },
-                  { label: 'Resolution', name: 'resolution', widget: 'string', default: '4K Resolution' },
-                  { label: 'Price', name: 'price', widget: 'string', required: false },
-                  { label: 'Available', name: 'available', widget: 'boolean', default: true },
-                  { label: 'Order', name: 'order', widget: 'number', default: 1 }
-                ]
-              },
-              {
-                name: 'settings',
-                label: 'Site Settings',
-                files: [
-                  {
-                    label: 'General Settings',
-                    name: 'general',
-                    file: '_data/settings.yml',
-                    fields: [
-                      { label: 'Site Title', name: 'site_title', widget: 'string', default: "Dat's Art" },
-                      { label: 'Site Subtitle', name: 'site_subtitle', widget: 'string', default: 'Bringing Technology into Art' },
-                      { label: 'Contact Email', name: 'contact_email', widget: 'string' },
-                      { label: 'Instagram Handle', name: 'instagram_handle', widget: 'string' },
-                      { label: 'WhatsApp Number', name: 'whatsapp_number', widget: 'string' }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        });
-      } else {
-        // Retry if CMS not loaded yet
-        setTimeout(initCMS, 100);
-      }
-    }
-    
-    // Start initialization when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initCMS);
-    } else {
-      initCMS();
-    }
+    // Redirect to Netlify CMS
+    window.location.href = "https://datsartcms.netlify.app/admin";
   </script>
 </body>
 </html>
