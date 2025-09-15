@@ -65,18 +65,28 @@ Vercel will automatically deploy the changes.
 
 ### 3. Configure CMS Authentication
 
-1. **Update CMS config for your Netlify site**:
-   - We need to tell your Vercel-hosted CMS which Netlify site to authenticate with
-   - I'll help you update the config with your Netlify site URL
+1. **First, make sure all files are pushed to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Add Netlify CMS integration"
+   git push origin main
+   ```
 
-2. **Invite yourself as an admin**:
+2. **Enable Identity on your Netlify site**:
+   - Go to your Netlify site dashboard
+   - Click on "Identity" tab
+   - Click "Enable Identity"
+   - Go to Settings → Identity → Services
+   - Enable "Git Gateway"
+
+3. **Invite yourself as an admin**:
    - In Netlify dashboard → Identity → "Invite users"
    - Add your email address
    - Check your email and accept the invitation
    - Set your password
 
-3. **Access the CMS**:
-   - Go to `https://your-vercel-domain.vercel.app/admin`
+4. **Access the CMS**:
+   - Go to `https://your-vercel-domain.vercel.app/admin` (NOT the Netlify URL)
    - You should see the Netlify CMS login interface
    - Login with your Netlify Identity credentials
    - You should now see the CMS interface with Gallery, Featured Art, and Settings collections
@@ -145,10 +155,40 @@ your-project/
 
 ## Troubleshooting
 
+### "Error loading the CMS configuration" (Config.yml 404 error)
+This error means the CMS can't find the config.yml file. Here's how to fix it:
+
+1. **Check which URL you're using**:
+   - ❌ Don't use: `https://your-netlify-site.netlify.app/admin` (this won't work properly with our setup)
+   - ✅ Use: `https://your-vercel-site.vercel.app/admin` (your main site)
+
+2. **If you're on the correct Vercel URL and still getting the error**:
+   - The issue might be that the admin folder files weren't committed to your repository
+   - Check that both `admin/config.yml` and `admin/index.html` exist in your GitHub repo
+
+3. **Make sure files are committed and pushed**:
+   ```bash
+   git add admin/
+   git add _data/
+   git add api/
+   git add scripts/cms-content.js
+   git commit -m "Add Netlify CMS files"
+   git push origin main
+   ```
+
+4. **Verify the admin folder structure**:
+   Your repository should have:
+   ```
+   admin/
+   ├── config.yml
+   └── index.html
+   ```
+
 ### Can't access /admin
-- Check that Netlify Identity is properly enabled
+- Check that Netlify Identity is properly enabled on your Netlify deployment
 - Verify your site URL is correctly set in Netlify
 - Make sure you've accepted the invitation email
+- Try accessing the admin via your Vercel URL, not Netlify URL
 
 ### Changes not showing on site
 - Check that content is "Published" not just saved as draft
