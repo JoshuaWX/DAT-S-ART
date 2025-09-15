@@ -53,14 +53,33 @@ export default async function handler(req, res) {
 function parseYAML(yamlContent) {
     const lines = yamlContent.split('\n');
     const data = {};
+    let currentKey = null;
+    let currentValue = '';
+    let isMultiLine = false;
     
-    for (const line of lines) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
         const trimmed = line.trim();
+        
         if (trimmed && !trimmed.startsWith('#')) {
             const colonIndex = trimmed.indexOf(':');
-            if (colonIndex > -1) {
-                const key = trimmed.substring(0, colonIndex).trim();
+            
+            if (colonIndex > -1 && !isMultiLine) {
+                // Finish previous multi-line value if exists
+                if (currentKey && currentValue) {
+                    data[currentKey] = currentValue.trim();
+                    currentValue = '';
+                }
+                
+                currentKey = trimmed.substring(0, colonIndex).trim();
                 let value = trimmed.substring(colonIndex + 1).trim();
+                
+                // Check for multi-line indicators
+                if (value === '|' || value === '>') {
+                    isMultiLine = true;
+                    currentValue = '';
+                    continue;
+                }
                 
                 // Remove quotes
                 if ((value.startsWith('"') && value.endsWith('"')) || 
@@ -73,9 +92,26 @@ function parseYAML(yamlContent) {
                 else if (value === 'false') value = false;
                 else if (!isNaN(value) && value !== '') value = Number(value);
                 
-                data[key] = value;
+                data[currentKey] = value;
+                currentKey = null;
+            } else if (isMultiLine && currentKey) {
+                // Handle multi-line content
+                if (trimmed === '' || line.startsWith('  ')) {
+                    currentValue += (currentValue ? '\n' : '') + line.substring(2); // Remove 2-space indent
+                } else {
+                    // End of multi-line, start new key
+                    data[currentKey] = currentValue.trim();
+                    currentValue = '';
+                    isMultiLine = false;
+                    i--; // Re-process this line as a new key
+                }
             }
         }
+    }
+    
+    // Handle final multi-line value
+    if (currentKey && currentValue) {
+        data[currentKey] = currentValue.trim();
     }
     
     return data;
