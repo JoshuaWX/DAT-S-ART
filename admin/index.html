@@ -26,6 +26,80 @@
         }
       });
     }
+
+    // Embed CMS configuration directly in JavaScript to bypass config.yml loading issues
+    window.CMS_MANUAL_INIT = true;
+    
+    // Wait for CMS to load then initialize with embedded config
+    window.addEventListener('load', function() {
+      if (window.CMS) {
+        window.CMS.init({
+          config: {
+            backend: {
+              name: 'git-gateway',
+              branch: 'main',
+              site_domain: 'kaleidoscopic-tanuki-14c719.netlify.app',
+              site_id: '7cc4f3db-2b6b-4598-8e60-edf09fa87ba9'
+            },
+            publish_mode: 'editorial_workflow',
+            media_folder: 'images',
+            public_folder: '/images',
+            collections: [
+              {
+                name: 'gallery',
+                label: 'Gallery',
+                folder: '_data/gallery',
+                create: true,
+                slug: '{{slug}}',
+                fields: [
+                  { label: 'Title', name: 'title', widget: 'string' },
+                  { label: 'Description', name: 'description', widget: 'text' },
+                  { label: 'Image', name: 'image', widget: 'image' },
+                  { label: 'Category', name: 'category', widget: 'string', default: 'Digital Art' },
+                  { label: 'Featured', name: 'featured', widget: 'boolean', default: false },
+                  { label: 'Order', name: 'order', widget: 'number', default: 1 }
+                ]
+              },
+              {
+                name: 'featured',
+                label: 'Featured Art',
+                folder: '_data/featured',
+                create: true,
+                slug: '{{slug}}',
+                fields: [
+                  { label: 'Title', name: 'title', widget: 'string' },
+                  { label: 'Description', name: 'description', widget: 'text' },
+                  { label: 'Image', name: 'image', widget: 'image' },
+                  { label: 'Art Type', name: 'art_type', widget: 'string', default: 'Digital Art' },
+                  { label: 'Resolution', name: 'resolution', widget: 'string', default: '4K Resolution' },
+                  { label: 'Price', name: 'price', widget: 'string', required: false },
+                  { label: 'Available', name: 'available', widget: 'boolean', default: true },
+                  { label: 'Order', name: 'order', widget: 'number', default: 1 }
+                ]
+              },
+              {
+                name: 'settings',
+                label: 'Site Settings',
+                files: [
+                  {
+                    label: 'General Settings',
+                    name: 'general',
+                    file: '_data/settings.yml',
+                    fields: [
+                      { label: 'Site Title', name: 'site_title', widget: 'string', default: "Dat's Art" },
+                      { label: 'Site Subtitle', name: 'site_subtitle', widget: 'string', default: 'Bringing Technology into Art' },
+                      { label: 'Contact Email', name: 'contact_email', widget: 'string' },
+                      { label: 'Instagram Handle', name: 'instagram_handle', widget: 'string' },
+                      { label: 'WhatsApp Number', name: 'whatsapp_number', widget: 'string' }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
