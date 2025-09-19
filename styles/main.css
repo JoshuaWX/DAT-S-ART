@@ -4787,6 +4787,12 @@ section {
         margin-top: 2rem;
     }
     
+    .instagram,
+    .subscribe,
+    .contact {
+        padding-top: 5rem;
+    }
+    
     .hero-title {
         font-size: clamp(1.4rem, 8vw, 2.2rem);
         margin-bottom: 0.8rem;
