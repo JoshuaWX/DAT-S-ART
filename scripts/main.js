@@ -717,35 +717,41 @@ async function handleSubscribeSubmit(e) {
             // Don't fail the whole process if Mailchimp fails - still send welcome email
         }
 
-        // Step 2: Always send welcome email (even for existing subscribers)
-        // This ensures consistent user experience and Mailchimp gets the tracking data
-        const templateParams = {
-            to_email: email, // Send TO the subscriber
-            subscriber_email: email,
-            subscriber_name: email.split('@')[0], // Use email prefix as name fallback
-            subscription_date: new Date().toLocaleDateString(),
-            from_name: 'Dat\'s Art Team',
-            reply_to: 'datsartinfo@gmail.com',
-            is_returning_subscriber: isAlreadySubscribed
-        };
-
-        console.log('Sending welcome email to subscriber with params:', templateParams);
-
-        // Use the correct subscription template for welcome emails
-        const emailResponse = await emailjs.send(
-            'service_vbar1qp',    // Your service ID
-            'template_9980p4c',   // Your subscription welcome template ID
-            templateParams
-        );
-
-        console.log('Welcome email sent successfully to subscriber:', emailResponse);
-        
-        // Show appropriate success message based on subscription status
+        // Step 2: Only send welcome email to NEW subscribers
         if (isAlreadySubscribed) {
-            showSubscribeMessage('🎨 Thanks for your continued interest! You\'re already part of our creative community. Check your email for updates!', 'success');
+            // User is already subscribed - don't send welcome email
+            console.log('User already subscribed, skipping welcome email');
+            showSubscribeMessage('🎨 You\'re already part of our creative community! No need to subscribe again.', 'success');
         } else {
-            showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for a welcome message with exclusive content.', 'success');
-            updateSubscriberCount(); // Only increment counter for truly new subscribers
+            // New subscriber - send welcome email
+            const templateParams = {
+                to_email: email, // Send TO the subscriber
+                subscriber_email: email,
+                subscriber_name: email.split('@')[0], // Use email prefix as name fallback
+                subscription_date: new Date().toLocaleDateString(),
+                from_name: 'Dat\'s Art Team',
+                reply_to: 'datsartinfo@gmail.com'
+            };
+
+            console.log('Sending welcome email to NEW subscriber with params:', templateParams);
+
+            try {
+                // Use the correct subscription template for welcome emails
+                const emailResponse = await emailjs.send(
+                    'service_vbar1qp',    // Your service ID
+                    'template_9980p4c',   // Your subscription welcome template ID
+                    templateParams
+                );
+
+                console.log('Welcome email sent successfully to NEW subscriber:', emailResponse);
+                showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for a welcome message with exclusive content.', 'success');
+                updateSubscriberCount(); // Only increment counter for truly new subscribers
+            } catch (emailError) {
+                console.error('Failed to send welcome email:', emailError);
+                // Still show success for Mailchimp subscription even if email fails
+                showSubscribeMessage('🎨 Successfully subscribed! Welcome email will arrive shortly.', 'success');
+                updateSubscriberCount();
+            }
         }
 
         // Track successful subscription (optional analytics)
