@@ -3364,6 +3364,10 @@ section {
         gap: 0.8rem !important;
     }
     
+    .sk-instagram-feed .sk-instagram-feed-item {
+        margin-bottom: 1rem !important;
+    }
+    
     .sk-instagram-feed .sk-instagram-feed-item:hover img {
         transform: none !important;
         filter: brightness(1.05) !important;
@@ -4777,6 +4781,10 @@ section {
     .hero-content {
         padding: 0.8rem 0.8rem 0;
         gap: 1.2rem;
+    }
+    
+    .instagram .section-header {
+        margin-top: 2rem;
     }
     
     .hero-title {
