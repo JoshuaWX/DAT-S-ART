@@ -690,7 +690,30 @@ async function handleSubscribeSubmit(e) {
     submitBtn.disabled = true;
 
     try {
-        // Prepare EmailJS template parameters for welcome email to subscriber
+        // Step 1: Add to Mailchimp audience for tracking
+        console.log('Adding subscriber to Mailchimp audience:', email);
+        
+        try {
+            const mailchimpResponse = await fetch('/api/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email })
+            });
+
+            const mailchimpResult = await mailchimpResponse.json();
+            console.log('Mailchimp subscription result:', mailchimpResult);
+
+            if (!mailchimpResult.success && !mailchimpResult.already_subscribed) {
+                throw new Error('Failed to add to Mailchimp audience');
+            }
+        } catch (mailchimpError) {
+            console.warn('Mailchimp subscription failed, but continuing with welcome email:', mailchimpError);
+            // Don't fail the whole process if Mailchimp fails - still send welcome email
+        }
+
+        // Step 2: Send welcome email to subscriber using EmailJS
         const templateParams = {
             to_email: email, // Send TO the subscriber
             subscriber_email: email,
@@ -700,18 +723,17 @@ async function handleSubscribeSubmit(e) {
             reply_to: 'datsartinfo@gmail.com'
         };
 
-        // Send welcome email to subscriber using subscription template
         console.log('Sending welcome email to subscriber with params:', templateParams);
 
         // Use the correct subscription template for welcome emails
-        const response = await emailjs.send(
+        const emailResponse = await emailjs.send(
             'service_vbar1qp',    // Your service ID
             'template_9980p4c',   // Your subscription welcome template ID
             templateParams
         );
 
-        console.log('Welcome email sent successfully to subscriber:', response);
-        showSubscribeMessage('🎨 Welcome to the creative loop! You\'ll receive updates about new artworks and tutorials.', 'success');
+        console.log('Welcome email sent successfully to subscriber:', emailResponse);
+        showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for a welcome message with exclusive content.', 'success');
         updateSubscriberCount();
 
         // Track successful subscription (optional analytics)

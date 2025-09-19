@@ -63,21 +63,11 @@ export default async function handler(req, res) {
         const result = await response.json();
 
         if (response.ok) {
-            // Send welcome email after successful Mailchimp subscription
-            try {
-                console.log('Attempting to send welcome email to:', email);
-                const emailResult = await sendWelcomeEmail(email);
-                console.log('Welcome email sent successfully:', emailResult);
-            } catch (emailError) {
-                console.error('Welcome email failed:', emailError);
-                console.error('EmailJS error details:', emailError.message);
-                // Don't fail the whole request if email fails
-            }
-
-            // Success
+            // Success - Mailchimp subscription complete
+            // Note: Welcome email is handled by the client-side JavaScript
             return res.status(200).json({
                 success: true,
-                message: 'Successfully subscribed to newsletter! 🎉 Welcome email is being sent - please check your Gmail inbox or Promotions tab within the next 5 minutes.',
+                message: 'Successfully subscribed to newsletter!',
                 subscriber_id: result.id
             });
         } else if (response.status === 400 && result.title === 'Member Exists') {
