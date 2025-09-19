@@ -116,10 +116,10 @@ async function sendWelcomeEmail(subscriberEmail) {
     const EMAILJS_SERVICE_ID = process.env.EMAILJS_SERVICE_ID || 'service_vbar1qp';
     const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || 'template_9980p4c';
     const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || 'DuJICjw7gRklu_MSr';
-    const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY || 'm15c6kD6osYY3V2hrLmeA';
+    const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
     
-    if (!EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID || !EMAILJS_PUBLIC_KEY) {
-        console.log('EmailJS configuration missing, skipping welcome email');
+    if (!EMAILJS_PRIVATE_KEY) {
+        console.log('EmailJS private key missing, skipping welcome email. Required env var: EMAILJS_PRIVATE_KEY');
         return;
     }
 
