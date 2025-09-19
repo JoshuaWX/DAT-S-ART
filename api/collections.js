@@ -22,9 +22,31 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Collection parameter required' });
     }
 
+    // Security: Validate input parameter to prevent path traversal
+    const safePathRegex = /^[a-zA-Z0-9._-]+$/;
+    if (!safePathRegex.test(collection)) {
+        return res.status(400).json({ error: 'Invalid characters in collection parameter' });
+    }
+
+    // Security: Prevent path traversal sequences
+    if (collection.includes('..')) {
+        return res.status(400).json({ error: 'Path traversal not allowed' });
+    }
+
     try {
         // Get the absolute path to the collection directory
-        const collectionPath = path.join(process.cwd(), '_data', collection);
+        const dataDir = path.join(process.cwd(), '_data');
+        const requestedPath = path.join(dataDir, collection);
+        
+        // Security: Ensure the resolved path is within the _data directory
+        const resolvedPath = path.resolve(requestedPath);
+        const resolvedDataDir = path.resolve(dataDir);
+        
+        if (!resolvedPath.startsWith(resolvedDataDir + path.sep) && resolvedPath !== resolvedDataDir) {
+            return res.status(403).json({ error: 'Access denied: Path outside allowed directory' });
+        }
+        
+        const collectionPath = resolvedPath;
         
         // Read all files in the collection directory
         const files = await fs.readdir(collectionPath);
@@ -34,8 +56,22 @@ export default async function handler(req, res) {
         
         for (const file of markdownFiles) {
             try {
+                // Security: Validate filename to prevent path traversal
+                if (file.includes('..') || file.includes('/') || file.includes('\\')) {
+                    console.warn(`Skipping potentially unsafe filename: ${file}`);
+                    continue;
+                }
+                
                 const filePath = path.join(collectionPath, file);
-                const fileContent = await fs.readFile(filePath, 'utf8');
+                
+                // Security: Double-check that resolved file path is still within collection directory
+                const resolvedFilePath = path.resolve(filePath);
+                if (!resolvedFilePath.startsWith(resolvedPath + path.sep) && resolvedFilePath !== resolvedPath) {
+                    console.warn(`Skipping file outside collection directory: ${file}`);
+                    continue;
+                }
+                
+                const fileContent = await fs.readFile(resolvedFilePath, 'utf8');
                 
                 // Parse front matter
                 const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---/;
