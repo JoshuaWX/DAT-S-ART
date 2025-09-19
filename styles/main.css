@@ -2158,7 +2158,7 @@ section {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    z-index: 10001;
+    z-index: 10010; /* Higher z-index to stay above image */
 }
 
 .gallery-modal-close:hover {
@@ -2186,7 +2186,7 @@ section {
     display: block !important;
     visibility: visible !important;
     position: relative !important;
-    z-index: 10005 !important;
+    z-index: 10002 !important; /* Lower z-index than close button */
     margin: 0 auto !important;
 }
 
@@ -2312,9 +2312,9 @@ section {
 @media (max-width: 480px) {
     .gallery-modal-content {
         padding: 1rem;
-        margin: 0.5rem;
-        max-width: calc(100vw - 1rem);
-        max-height: calc(100vh - 1rem);
+        margin: 0.25rem; /* Reduced margin for wider modal */
+        max-width: calc(100vw - 0.5rem); /* Wider modal - almost full width */
+        max-height: calc(100vh - 0.5rem);
         border-radius: 16px;
         top: 50%;
         transform: translate(-50%, -50%);
@@ -2329,9 +2329,10 @@ section {
     }
     
     .gallery-modal-image img {
-        max-height: 40vh;
+        max-height: 45vh; /* Increased height for better viewing */
         border-radius: 10px;
         box-shadow: 0 10px 25px rgb(0 0 0 / 40%);
+        z-index: 10002 !important; /* Lower z-index than close button */
     }
     
     .gallery-modal-info {
@@ -2369,13 +2370,23 @@ section {
     }
     
     .gallery-modal-close {
-        width: 40px;
-        height: 40px;
-        top: 0.6rem;
-        right: 0.6rem;
-        font-size: 1.1rem;
-        background: rgb(255 255 255 / 15%);
+        width: 44px; /* Larger close button for better touch */
+        height: 44px;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 1.2rem;
+        background: rgb(255 255 255 / 20%); /* More visible background */
         backdrop-filter: blur(10px);
+        z-index: 10010 !important; /* Higher z-index to stay above image */
+        border: 2px solid rgb(255 255 255 / 30%); /* Subtle border for visibility */
+        box-shadow: 0 4px 12px rgb(0 0 0 / 30%); /* Shadow for depth */
+    }
+    
+    .gallery-modal-close:hover,
+    .gallery-modal-close:active {
+        background: rgb(255 107 157 / 40%);
+        transform: scale(1.05);
+        border-color: rgb(255 107 157 / 50%);
     }
     
     .gallery-modal-backdrop {
