@@ -690,35 +690,49 @@ async function handleSubscribeSubmit(e) {
     submitBtn.disabled = true;
 
     try {
-        // Call Mailchimp API via Vercel serverless function
-        const response = await fetch('/api/subscribe', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email })
-        });
+        // Prepare EmailJS template parameters
+        const templateParams = {
+            from_email: email,
+            to_email: 'datsartinfo@gmail.com', // Your email
+            subject: 'New Newsletter Subscription',
+            message: `New newsletter subscription from: ${email}`,
+            submission_date: new Date().toLocaleDateString(),
+            subscription_type: 'Newsletter'
+        };
 
-        const result = await response.json();
+        // Send email using EmailJS (use same service but different template for subscriptions)
+        console.log('Sending subscription notification with params:', templateParams);
 
-        if (result.success) {
-            if (result.already_subscribed) {
-                showSubscribeMessage('You\'re already part of our creative community! 🎨', 'success');
-            } else {
-                showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for confirmation.', 'success');
-                updateSubscriberCount();
+        // Use subscription template (you may need to create this template in EmailJS)
+        const response = await emailjs.send(
+            'service_vbar1qp',    // Your service ID (same as contact form)
+            'template_vuxvmlk',   // Using same template as contact form for now
+            templateParams
+        );
 
-                // Track successful subscription (optional analytics)
-                trackSubscription(email);
-            }
-            elements.subscribeEmail.value = '';
-        } else {
-            showSubscribeMessage(result.message || 'Something went wrong. Please try again.', 'error');
-        }
+        console.log('Subscription sent successfully:', response);
+        showSubscribeMessage('🎨 Welcome to the creative loop! You\'ll receive updates about new artworks and tutorials.', 'success');
+        updateSubscriberCount();
+
+        // Track successful subscription (optional analytics)
+        trackSubscription(email);
+        elements.subscribeEmail.value = '';
 
     } catch (error) {
         console.error('Subscription error:', error);
-        showSubscribeMessage('Network error. Please check your connection and try again.', 'error');
+        console.error('Error details:', error.message);
+        console.error('Error status:', error.status);
+
+        let errorMessage = 'Failed to subscribe. Please try again or contact us directly.';
+        if (error.message && error.message.includes('network')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.status === 400) {
+            errorMessage = 'Invalid email address. Please check and try again.';
+        } else if (error.status === 403) {
+            errorMessage = 'Service temporarily unavailable. Please try again later.';
+        }
+
+        showSubscribeMessage(errorMessage, 'error');
     } finally {
         // Reset button state
         submitBtn.querySelector('span').textContent = originalText;
