@@ -690,8 +690,11 @@ async function handleSubscribeSubmit(e) {
     submitBtn.disabled = true;
 
     try {
-        // Step 1: Add to Mailchimp audience for tracking
-        console.log('Adding subscriber to Mailchimp audience:', email);
+        // Step 1: Always attempt to add/update in Mailchimp audience for tracking
+        console.log('Processing subscription request for:', email);
+        
+        let mailchimpSuccess = false;
+        let isAlreadySubscribed = false;
         
         try {
             const mailchimpResponse = await fetch('/api/subscribe', {
@@ -705,22 +708,25 @@ async function handleSubscribeSubmit(e) {
             const mailchimpResult = await mailchimpResponse.json();
             console.log('Mailchimp subscription result:', mailchimpResult);
 
-            if (!mailchimpResult.success && !mailchimpResult.already_subscribed) {
-                throw new Error('Failed to add to Mailchimp audience');
+            if (mailchimpResult.success) {
+                mailchimpSuccess = true;
+                isAlreadySubscribed = mailchimpResult.already_subscribed || false;
             }
         } catch (mailchimpError) {
             console.warn('Mailchimp subscription failed, but continuing with welcome email:', mailchimpError);
             // Don't fail the whole process if Mailchimp fails - still send welcome email
         }
 
-        // Step 2: Send welcome email to subscriber using EmailJS
+        // Step 2: Always send welcome email (even for existing subscribers)
+        // This ensures consistent user experience and Mailchimp gets the tracking data
         const templateParams = {
             to_email: email, // Send TO the subscriber
             subscriber_email: email,
             subscriber_name: email.split('@')[0], // Use email prefix as name fallback
             subscription_date: new Date().toLocaleDateString(),
             from_name: 'Dat\'s Art Team',
-            reply_to: 'datsartinfo@gmail.com'
+            reply_to: 'datsartinfo@gmail.com',
+            is_returning_subscriber: isAlreadySubscribed
         };
 
         console.log('Sending welcome email to subscriber with params:', templateParams);
@@ -733,8 +739,14 @@ async function handleSubscribeSubmit(e) {
         );
 
         console.log('Welcome email sent successfully to subscriber:', emailResponse);
-        showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for a welcome message with exclusive content.', 'success');
-        updateSubscriberCount();
+        
+        // Show appropriate success message based on subscription status
+        if (isAlreadySubscribed) {
+            showSubscribeMessage('🎨 Thanks for your continued interest! You\'re already part of our creative community. Check your email for updates!', 'success');
+        } else {
+            showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for a welcome message with exclusive content.', 'success');
+            updateSubscriberCount(); // Only increment counter for truly new subscribers
+        }
 
         // Track successful subscription (optional analytics)
         trackSubscription(email);
