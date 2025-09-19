@@ -22,9 +22,31 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Collection and file parameters required' });
     }
 
+    // Security: Validate input parameters to prevent path traversal
+    const safePathRegex = /^[a-zA-Z0-9._-]+$/;
+    if (!safePathRegex.test(collection) || !safePathRegex.test(file)) {
+        return res.status(400).json({ error: 'Invalid characters in collection or file parameter' });
+    }
+
+    // Security: Prevent path traversal sequences
+    if (collection.includes('..') || file.includes('..')) {
+        return res.status(400).json({ error: 'Path traversal not allowed' });
+    }
+
     try {
         // Get the absolute path to the _data directory
-        const dataPath = path.join(process.cwd(), '_data', collection, file);
+        const dataDir = path.join(process.cwd(), '_data');
+        const requestedPath = path.join(dataDir, collection, file);
+        
+        // Security: Ensure the resolved path is within the _data directory
+        const resolvedPath = path.resolve(requestedPath);
+        const resolvedDataDir = path.resolve(dataDir);
+        
+        if (!resolvedPath.startsWith(resolvedDataDir + path.sep) && resolvedPath !== resolvedDataDir) {
+            return res.status(403).json({ error: 'Access denied: Path outside allowed directory' });
+        }
+        
+        const dataPath = resolvedPath;
         
         // Check if file exists and read it
         const fileContent = await fs.readFile(dataPath, 'utf8');
