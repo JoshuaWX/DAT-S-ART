@@ -32,7 +32,7 @@ class PerformanceMonitor {
 
     toggle() {
         this.isActive = !this.isActive;
-        
+
         if (this.isActive) {
             this.show();
             this.startTracking();
@@ -91,13 +91,13 @@ class PerformanceMonitor {
     calculateFPS() {
         const now = performance.now();
         const elapsed = now - this.startTime;
-        
+
         if (elapsed >= 1000) {
             this.metrics.fps = Math.round((this.frameCount * 1000) / elapsed);
             this.frameCount = 0;
             this.startTime = now;
         }
-        
+
         this.frameCount++;
         this.metrics.frameTime = now - this.lastFrameTime;
         this.lastFrameTime = now;
@@ -109,7 +109,7 @@ class PerformanceMonitor {
 
         window.addEventListener('scroll', () => {
             scrollEventCount++;
-            
+
             if (scrollStartTime === 0) {
                 scrollStartTime = performance.now();
             }
@@ -189,19 +189,19 @@ class PerformanceMonitor {
     // Method to log performance warnings
     static checkPerformance() {
         const metrics = PerformanceMonitor.getBasicMetrics();
-        
+
         if (metrics.memory && metrics.memory.used > 100) {
             console.warn(`⚠️ High memory usage: ${metrics.memory.used}MB`);
         }
-        
+
         if (metrics.timing.loadComplete > 5000) {
             console.warn(`⚠️ Slow load time: ${metrics.timing.loadComplete}ms`);
         }
-        
+
         if (metrics.resources > 50) {
             console.warn(`⚠️ Many resources loaded: ${metrics.resources}`);
         }
-        
+
         return metrics;
     }
 }
@@ -212,7 +212,7 @@ const performanceMonitor = new PerformanceMonitor();
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     performanceMonitor.init();
-    
+
     // Log performance metrics in development
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         setTimeout(() => {

@@ -4,7 +4,7 @@ class OptimizedScrollAnimations {
         this.isReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         this.isInitialized = false;
         this.observer = null;
-        
+
         // Only initialize if not reduced motion and not already handled by main.js
         if (!this.isReducedMotion && !window.mainScrollHandlerExists) {
             this.init();
@@ -13,11 +13,11 @@ class OptimizedScrollAnimations {
 
     init() {
         if (this.isInitialized) return;
-        
+
         this.setupIntersectionObserver();
         this.setupInitialStates();
         this.isInitialized = true;
-        
+
         // Mark that scroll animations are handled
         window.scrollAnimationsActive = true;
     }
@@ -43,12 +43,12 @@ class OptimizedScrollAnimations {
     setupInitialStates() {
         // Setup elements with lightweight approach
         const elements = document.querySelectorAll('.scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-scale');
-        
-        elements.forEach((element, index) => {
+
+        elements.forEach((element, _index) => {
             // Set initial state
             element.style.opacity = '0';
             element.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-            
+
             // Different initial transforms based on class
             if (element.classList.contains('scroll-reveal-left')) {
                 element.style.transform = 'translateX(-30px)';
@@ -59,7 +59,7 @@ class OptimizedScrollAnimations {
             } else {
                 element.style.transform = 'translateY(20px)';
             }
-            
+
             // Observe element
             this.observer.observe(element);
         });
@@ -70,16 +70,16 @@ class OptimizedScrollAnimations {
 
     setupStaggerContainers() {
         const staggerContainers = document.querySelectorAll('.stagger-container');
-        
-        staggerContainers.forEach(container => {
+
+        staggerContainers.forEach((container, index) => {
             const children = Array.from(container.children);
-            
-            children.forEach((child, index) => {
+
+            children.forEach((child, _childIndex) => {
                 child.style.opacity = '0';
                 child.style.transform = 'translateY(15px)';
                 child.style.transition = `all 0.6s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s`;
             });
-            
+
             // Observe container
             this.observer.observe(container);
         });

@@ -37,24 +37,24 @@ export default async function handler(req, res) {
         // Get the absolute path to the _data directory
         const dataDir = path.join(process.cwd(), '_data');
         const requestedPath = path.join(dataDir, collection, file);
-        
+
         // Security: Ensure the resolved path is within the _data directory
         const resolvedPath = path.resolve(requestedPath);
         const resolvedDataDir = path.resolve(dataDir);
-        
+
         if (!resolvedPath.startsWith(resolvedDataDir + path.sep) && resolvedPath !== resolvedDataDir) {
             return res.status(403).json({ error: 'Access denied: Path outside allowed directory' });
         }
-        
+
         const dataPath = resolvedPath;
-        
+
         // Check if file exists and read it
         const fileContent = await fs.readFile(dataPath, 'utf8');
-        
+
         // Parse front matter
         const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---/;
         const match = fileContent.match(frontMatterRegex);
-        
+
         if (match) {
             const yamlContent = match[1];
             const data = parseYAML(yamlContent);
@@ -78,42 +78,42 @@ function parseYAML(yamlContent) {
     let currentKey = null;
     let currentValue = '';
     let isMultiLine = false;
-    
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
-        
+
         if (trimmed && !trimmed.startsWith('#')) {
             const colonIndex = trimmed.indexOf(':');
-            
+
             if (colonIndex > -1 && !isMultiLine) {
                 // Finish previous multi-line value if exists
                 if (currentKey && currentValue) {
                     data[currentKey] = currentValue.trim();
                     currentValue = '';
                 }
-                
+
                 currentKey = trimmed.substring(0, colonIndex).trim();
                 let value = trimmed.substring(colonIndex + 1).trim();
-                
+
                 // Check for multi-line indicators
                 if (value === '|' || value === '>') {
                     isMultiLine = true;
                     currentValue = '';
                     continue;
                 }
-                
+
                 // Remove quotes
-                if ((value.startsWith('"') && value.endsWith('"')) || 
+                if ((value.startsWith('"') && value.endsWith('"')) ||
                     (value.startsWith("'") && value.endsWith("'"))) {
                     value = value.slice(1, -1);
                 }
-                
+
                 // Convert boolean and number values
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (!isNaN(value) && value !== '') value = Number(value);
-                
+
                 data[currentKey] = value;
                 currentKey = null;
             } else if (isMultiLine && currentKey) {
@@ -130,11 +130,11 @@ function parseYAML(yamlContent) {
             }
         }
     }
-    
+
     // Handle final multi-line value
     if (currentKey && currentValue) {
         data[currentKey] = currentValue.trim();
     }
-    
+
     return data;
 }

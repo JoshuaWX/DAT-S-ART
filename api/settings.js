@@ -19,10 +19,10 @@ export default async function handler(req, res) {
     try {
         // Get the absolute path to the settings file
         const settingsPath = path.join(process.cwd(), '_data', 'settings.yml');
-        
+
         // Check if file exists and read it
         const fileContent = await fs.readFile(settingsPath, 'utf8');
-        
+
         // Parse YAML content
         const data = parseYAML(fileContent);
         res.status(200).json(data);
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 function parseYAML(yamlContent) {
     const lines = yamlContent.split('\n');
     const data = {};
-    
+
     for (const line of lines) {
         const trimmed = line.trim();
         if (trimmed && !trimmed.startsWith('#')) {
@@ -47,22 +47,22 @@ function parseYAML(yamlContent) {
             if (colonIndex > -1) {
                 const key = trimmed.substring(0, colonIndex).trim();
                 let value = trimmed.substring(colonIndex + 1).trim();
-                
+
                 // Remove quotes
-                if ((value.startsWith('"') && value.endsWith('"')) || 
+                if ((value.startsWith('"') && value.endsWith('"')) ||
                     (value.startsWith("'") && value.endsWith("'"))) {
                     value = value.slice(1, -1);
                 }
-                
+
                 // Convert boolean and number values
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (!isNaN(value) && value !== '') value = Number(value);
-                
+
                 data[key] = value;
             }
         }
     }
-    
+
     return data;
 }

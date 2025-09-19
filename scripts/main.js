@@ -2,10 +2,10 @@
 
 // Global variables
 let isLoading = true;
-let customCursor = null;
+const customCursor = null;
 let scrollProgress = 0;
 let lastScrollTime = 0;
-let scrollThrottle = 16; // ~60fps
+const scrollThrottle = 16; // ~60fps
 let isScrolling = false;
 let scrollEndTimer = null;
 
@@ -16,7 +16,7 @@ window.mainScrollHandlerExists = true;
 const performanceOptimizer = {
     rafId: null,
     isRafScheduled: false,
-    
+
     scheduleUpdate(callback) {
         if (!this.isRafScheduled) {
             this.isRafScheduled = true;
@@ -26,7 +26,7 @@ const performanceOptimizer = {
             });
         }
     },
-    
+
     cancelUpdate() {
         if (this.rafId) {
             cancelAnimationFrame(this.rafId);
@@ -73,7 +73,7 @@ function initializeElements() {
 function initializeCustomCursor() {
     // Custom cursor disabled to improve performance
     document.body.style.cursor = 'auto';
-    return;
+
 }
 
 // ===== NAVIGATION =====
@@ -84,7 +84,7 @@ function initializeNavigation() {
             e.preventDefault();
             const targetId = link.getAttribute('href').substring(1);
             const targetSection = document.getElementById(targetId);
-            
+
             if (targetSection) {
                 // Adjust offset for mobile devices
                 const isMobile = window.innerWidth <= 768;
@@ -93,7 +93,7 @@ function initializeNavigation() {
                     top: offsetTop,
                     behavior: 'smooth'
                 });
-                
+
                 // Close mobile menu if open
                 elements.navMenu.classList.remove('active');
                 elements.hamburger.classList.remove('active');
@@ -103,13 +103,13 @@ function initializeNavigation() {
 
     // Optimized navbar background on scroll with RAF
     let navbarUpdateScheduled = false;
-    
+
     window.addEventListener('scroll', () => {
         if (!navbarUpdateScheduled) {
             navbarUpdateScheduled = true;
             performanceOptimizer.scheduleUpdate(() => {
                 const scrolled = window.pageYOffset;
-                
+
                 if (scrolled > 100) {
                     elements.navbar.style.background = 'linear-gradient(135deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 26, 46, 0.95) 50%, rgba(22, 33, 62, 0.95) 100%)';
                     elements.navbar.style.backdropFilter = 'blur(30px) saturate(150%)';
@@ -137,13 +137,13 @@ function initializeNavigation() {
     // Update active navigation link based on scroll position
     function updateActiveNavLink() {
         const scrollPos = window.scrollY + 100; // Offset for header height
-        
+
         elements.navLinks.forEach(link => {
             const section = document.querySelector(link.getAttribute('href'));
             if (section) {
                 const sectionTop = section.offsetTop;
                 const sectionBottom = sectionTop + section.offsetHeight;
-                
+
                 if (scrollPos >= sectionTop && scrollPos < sectionBottom) {
                     elements.navLinks.forEach(l => l.classList.remove('active'));
                     link.classList.add('active');
@@ -159,10 +159,10 @@ function initializeNavigation() {
             if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
                 const sectionId = entry.target.getAttribute('id');
                 const navLink = document.querySelector(`.nav-link[href="#${sectionId}"]`);
-                
+
                 // Remove active class from all links
                 elements.navLinks.forEach(link => link.classList.remove('active'));
-                
+
                 // Add active class to current link
                 if (navLink) navLink.classList.add('active');
             }
@@ -207,7 +207,7 @@ function initializeLoadingScreen() {
     setTimeout(() => {
         elements.loadingScreen.classList.add('loaded');
         isLoading = false;
-        
+
         // Remove loading screen from DOM after animation
         setTimeout(() => {
             elements.loadingScreen.style.display = 'none';
@@ -227,7 +227,7 @@ function animateHeroText() {
         line.style.opacity = '0';
         line.style.transform = 'translateY(50px)';
         line.style.transition = 'all 0.8s ease';
-        
+
         setTimeout(() => {
             line.style.opacity = '1';
             line.style.transform = 'translateY(0)';
@@ -275,19 +275,19 @@ function initializeScrollEffects() {
     // Optimized parallax effect with performance throttling
     let parallaxScheduled = false;
     const parallaxElements = document.querySelectorAll('.hero-bg');
-    
+
     if (parallaxElements.length > 0) {
         window.addEventListener('scroll', () => {
             if (!parallaxScheduled) {
                 parallaxScheduled = true;
                 performanceOptimizer.scheduleUpdate(() => {
                     const scrolled = window.pageYOffset;
-                    
+
                     parallaxElements.forEach(element => {
                         const speed = 0.5;
                         element.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
                     });
-                    
+
                     parallaxScheduled = false;
                 });
             }
@@ -320,12 +320,12 @@ function filterGalleryItems(filterValue) {
     elements.galleryItems.forEach((item, index) => {
         const category = item.getAttribute('data-category');
         const shouldShow = filterValue === 'all' || category === filterValue;
-        
+
         if (shouldShow) {
             item.style.display = 'block';
             item.style.opacity = '0';
             item.style.transform = 'scale(0.8)';
-            
+
             // Stagger animations for better visual appeal
             setTimeout(() => {
                 item.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -336,7 +336,7 @@ function filterGalleryItems(filterValue) {
             item.style.transition = 'all 0.4s ease';
             item.style.opacity = '0';
             item.style.transform = 'scale(0.8)';
-            
+
             setTimeout(() => {
                 item.style.display = 'none';
             }, 400);
@@ -350,16 +350,16 @@ function initializeContactForm() {
 
     elements.contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         // Get form data
         const formData = new FormData(elements.contactForm);
         const submitBtn = elements.contactForm.querySelector('.submit-btn');
         const originalText = submitBtn.innerHTML;
-        
+
         // Show loading state
         submitBtn.innerHTML = '<span>Sending...</span><i class="fas fa-spinner fa-spin"></i>';
         submitBtn.disabled = true;
-        
+
         try {
             // Prepare EmailJS template parameters
             const templateParams = {
@@ -375,7 +375,7 @@ function initializeContactForm() {
 
             // Send email using EmailJS
             console.log('Sending contact form with params:', templateParams);
-            
+
             // Use contact template
             const response = await emailjs.send(
                 'service_vbar1qp',    // Your service ID
@@ -386,12 +386,12 @@ function initializeContactForm() {
             console.log('Contact form sent successfully:', response);
             showNotification('Message sent successfully! 🎉 We\'ll get back to you within 24 hours.', 'success');
             elements.contactForm.reset();
-            
+
         } catch (error) {
             console.error('Contact form failed:', error);
             console.error('Error details:', error.message);
             console.error('Error status:', error.status);
-            
+
             let errorMessage = 'Failed to send message. Please try again or contact us directly.';
             if (error.message && error.message.includes('network')) {
                 errorMessage = 'Network error. Please check your connection and try again.';
@@ -400,7 +400,7 @@ function initializeContactForm() {
             } else if (error.status === 403) {
                 errorMessage = 'Service temporarily unavailable. Please contact us directly.';
             }
-            
+
             showNotification(errorMessage, 'error');
         } finally {
             // Reset button state
@@ -450,7 +450,7 @@ function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.textContent = message;
-    
+
     notification.style.cssText = `
         position: fixed;
         top: 100px;
@@ -523,14 +523,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const size = Math.max(rect.width, rect.height);
             const x = e.clientX - rect.left - size / 2;
             const y = e.clientY - rect.top - size / 2;
-            
+
             ripple.style.width = ripple.style.height = size + 'px';
             ripple.style.left = x + 'px';
             ripple.style.top = y + 'px';
             ripple.classList.add('ripple');
-            
+
             button.appendChild(ripple);
-            
+
             setTimeout(() => {
                 ripple.remove();
             }, 600);
@@ -576,69 +576,30 @@ function buyArt(artName) {
     const phoneNumber = '2348023088491'; // Updated WhatsApp number
     const message = `Hi! I'm interested in buying "${artName}". Could you please provide more details about pricing and high-resolution files?`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    
+
     window.open(whatsappUrl, '_blank');
 }
 
 // Image protection - Disable right-click on art images
 document.addEventListener('DOMContentLoaded', function() {
     const artImages = document.querySelectorAll('.art-image');
-    
+
     artImages.forEach(img => {
         img.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             showNotification('Image download is not allowed. Please use the Buy Now button to purchase.');
         });
-        
+
         img.addEventListener('dragstart', function(e) {
             e.preventDefault();
         });
     });
 });
 
-// Show notification function
-function showNotification(message) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = 'download-notification';
-    notification.textContent = message;
-    
-    // Add styles
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 10px;
-        z-index: 10001;
-        font-weight: 500;
-        box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
-        transform: translateX(100%);
-        transition: transform 0.3s ease;
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Animate in
-    setTimeout(() => {
-        notification.style.transform = 'translateX(0)';
-    }, 100);
-    
-    // Animate out and remove
-    setTimeout(() => {
-        notification.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            document.body.removeChild(notification);
-        }, 300);
-    }, 3000);
-}
-
 // ===== ANIMATED STAT COUNTERS =====
 function initializeStatCounters() {
     const statNumbers = document.querySelectorAll('.stat-number');
-    
+
     const animateCounter = (element, target) => {
         let current = 0;
         const increment = target / 50; // Animation duration control
@@ -648,7 +609,7 @@ function initializeStatCounters() {
                 current = target;
                 clearInterval(timer);
             }
-            
+
             // Format number display
             if (target >= 1000) {
                 element.textContent = Math.floor(current / 1000) + 'K+';
@@ -657,7 +618,7 @@ function initializeStatCounters() {
             }
         }, 50);
     };
-    
+
     // Intersection Observer for triggering animation
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -671,7 +632,7 @@ function initializeStatCounters() {
     }, {
         threshold: 0.5
     });
-    
+
     // Observe all stat numbers
     statNumbers.forEach(stat => {
         observer.observe(stat);
@@ -681,13 +642,13 @@ function initializeStatCounters() {
 // ===== SUBSCRIBE SECTION =====
 function initializeSubscribeSection() {
     if (!elements.subscribeForm) return;
-    
+
     // Animate subscriber count on load
     animateSubscriberCount();
-    
+
     // Handle form submission
     elements.subscribeForm.addEventListener('submit', handleSubscribeSubmit);
-    
+
     // Orbital icon animation
     initializeOrbitalAnimation();
 }
@@ -695,11 +656,11 @@ function initializeSubscribeSection() {
 function animateSubscriberCount() {
     const countElement = document.querySelector('.count-number');
     if (!countElement) return;
-    
+
     const target = parseInt(countElement.dataset.target) || 250;
     let current = 0;
     const increment = target / 100;
-    
+
     const counter = setInterval(() => {
         current += increment;
         if (current >= target) {
@@ -712,41 +673,41 @@ function animateSubscriberCount() {
 
 async function handleSubscribeSubmit(e) {
     e.preventDefault();
-    
+
     const email = elements.subscribeEmail.value;
     const submitBtn = elements.subscribeForm.querySelector('.subscribe-btn');
     const originalText = submitBtn.querySelector('span').textContent;
-    
+
     // Basic email validation
     if (!isValidEmail(email)) {
         showSubscribeMessage('Please enter a valid email address', 'error');
         return;
     }
-    
+
     // Update button state
     submitBtn.querySelector('span').textContent = 'Subscribing...';
     submitBtn.style.opacity = '0.7';
     submitBtn.disabled = true;
-    
+
     try {
         // Call Mailchimp API via Vercel serverless function
         const response = await fetch('/api/subscribe', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
-        
+
         const result = await response.json();
-        
+
         if (result.success) {
             if (result.already_subscribed) {
                 showSubscribeMessage('You\'re already part of our creative community! 🎨', 'success');
             } else {
                 showSubscribeMessage('🎨 Welcome to the creative loop! Check your email for confirmation.', 'success');
                 updateSubscriberCount();
-                
+
                 // Track successful subscription (optional analytics)
                 trackSubscription(email);
             }
@@ -754,7 +715,7 @@ async function handleSubscribeSubmit(e) {
         } else {
             showSubscribeMessage(result.message || 'Something went wrong. Please try again.', 'error');
         }
-        
+
     } catch (error) {
         console.error('Subscription error:', error);
         showSubscribeMessage('Network error. Please check your connection and try again.', 'error');
@@ -788,7 +749,7 @@ function showSubscribeMessage(message, type) {
         backdrop-filter: blur(10px);
         animation: slideInRight 0.3s ease;
     `;
-    
+
     document.body.appendChild(messageDiv);
     setTimeout(() => {
         messageDiv.remove();
@@ -814,14 +775,14 @@ function trackSubscription(email) {
                 value: 1
             });
         }
-        
+
         // Custom analytics tracking
         console.log('Newsletter subscription tracked:', {
             email: email.replace(/(.{2}).*@/, '$1***@'), // Anonymize for logging
             timestamp: new Date().toISOString(),
             source: 'website_footer'
         });
-        
+
     } catch (error) {
         console.warn('Analytics tracking failed:', error);
     }
@@ -839,14 +800,14 @@ function initializePerformanceMonitoring() {
     // Performance monitor (Ctrl+P to toggle)
     let performanceMonitor = null;
     let isMonitorVisible = false;
-    
+
     document.addEventListener('keydown', (e) => {
         if (e.ctrlKey && e.key === 'p') {
             e.preventDefault();
             togglePerformanceMonitor();
         }
     });
-    
+
     function togglePerformanceMonitor() {
         if (isMonitorVisible) {
             hidePerformanceMonitor();
@@ -854,10 +815,10 @@ function initializePerformanceMonitoring() {
             showPerformanceMonitor();
         }
     }
-    
+
     function showPerformanceMonitor() {
         if (performanceMonitor) return;
-        
+
         performanceMonitor = document.createElement('div');
         performanceMonitor.id = 'performance-monitor';
         performanceMonitor.style.cssText = `
@@ -874,12 +835,12 @@ function initializePerformanceMonitoring() {
             backdrop-filter: blur(10px);
             border: 1px solid rgba(135, 206, 235, 0.3);
         `;
-        
+
         document.body.appendChild(performanceMonitor);
         updatePerformanceStats();
         isMonitorVisible = true;
     }
-    
+
     function hidePerformanceMonitor() {
         if (performanceMonitor) {
             performanceMonitor.remove();
@@ -887,17 +848,17 @@ function initializePerformanceMonitoring() {
             isMonitorVisible = false;
         }
     }
-    
+
     function updatePerformanceStats() {
         if (!performanceMonitor) return;
-        
+
         const stats = {
             fps: Math.round(1000 / 16), // Approximate
             memory: performance.memory ? Math.round(performance.memory.usedJSHeapSize / 1048576) : 'N/A',
             scrollEvents: 'Throttled (16ms)',
             animations: 'GPU Accelerated'
         };
-        
+
         performanceMonitor.innerHTML = `
             <div>🚀 Performance Monitor</div>
             <div>FPS: ~${stats.fps}</div>
@@ -906,88 +867,30 @@ function initializePerformanceMonitoring() {
             <div>Animations: ${stats.animations}</div>
             <div style="margin-top: 8px; opacity: 0.7;">Press Ctrl+P to hide</div>
         `;
-        
+
         if (isMonitorVisible) {
             setTimeout(updatePerformanceStats, 1000);
         }
     }
 }
 
-// ===== THROTTLED SCROLL EFFECTS =====
-function initializeScrollEffects() {
-    // High-performance intersection observer for scroll animations
-    const observerOptions = {
-        threshold: [0.1, 0.5],
-        rootMargin: '0px 0px -50px 0px'
-    };
 
-    const scrollObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-                // Unobserve after animation to improve performance
-                scrollObserver.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // Observe elements for animation with better performance
-    const animateElements = document.querySelectorAll('.section-header, .gallery-item, .tech-category, .story-block');
-    animateElements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-        scrollObserver.observe(el);
-    });
-
-    // Add CSS for animate-in class
-    const style = document.createElement('style');
-    style.textContent = `
-        .animate-in {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-    `;
-    document.head.appendChild(style);
-
-    // Optimized parallax effect with performance throttling
-    let parallaxScheduled = false;
-    const parallaxElements = document.querySelectorAll('.hero-bg');
-    
-    if (parallaxElements.length > 0) {
-        window.addEventListener('scroll', () => {
-            if (!parallaxScheduled) {
-                parallaxScheduled = true;
-                performanceOptimizer.scheduleUpdate(() => {
-                    const scrolled = window.pageYOffset;
-                    
-                    parallaxElements.forEach(element => {
-                        const speed = 0.5;
-                        element.style.transform = `translate3d(0, ${scrolled * speed}px, 0)`;
-                    });
-                    
-                    parallaxScheduled = false;
-                });
-            }
-        }, { passive: true });
-    }
-}
 
 // Centralized scroll handler for maximum performance
 function handleThrottledScroll() {
     const now = Date.now();
     if (now - lastScrollTime < scrollThrottle) return;
-    
+
     lastScrollTime = now;
-    
+
     // Mark scrolling state
     isScrolling = true;
     clearTimeout(scrollEndTimer);
-    
+
     performanceOptimizer.scheduleUpdate(() => {
         handleNavbarScroll();
         handleParallaxScroll();
-        
+
         // Reset scrolling state after delay
         scrollEndTimer = setTimeout(() => {
             isScrolling = false;
@@ -997,7 +900,7 @@ function handleThrottledScroll() {
 
 function handleNavbarScroll() {
     if (!elements.navbar) return;
-    
+
     const scrolled = window.pageYOffset > 50;
     elements.navbar.classList.toggle('scrolled', scrolled);
 }
@@ -1005,10 +908,10 @@ function handleNavbarScroll() {
 function handleParallaxScroll() {
     // Only update if currently visible and scrolling
     if (!isScrolling) return;
-    
+
     const scrolled = window.pageYOffset;
     const rate = scrolled * -0.3; // Reduced parallax intensity for better performance
-    
+
     // Apply parallax to hero background only if in viewport
     const heroCanvas = document.getElementById('hero-canvas');
     if (heroCanvas && scrolled < window.innerHeight * 2) {
@@ -1021,7 +924,7 @@ function initializeParallaxElements(elements) {
     elements.forEach(element => {
         const speed = element.dataset.parallax || 0.5;
         // Use transform3d for hardware acceleration
-        element.style.transform = `translate3d(0, 0, 0)`;
+        element.style.transform = 'translate3d(0, 0, 0)';
         element.style.willChange = 'transform';
         element.style.backfaceVisibility = 'hidden';
     });
@@ -1043,7 +946,7 @@ window.scrollToTop = scrollToTop;
 // Gallery interactions
 function viewGalleryArt(imageName) {
     console.log('Opening gallery art:', imageName); // Debug log
-    
+
     // Create modal overlay
     const modal = document.createElement('div');
     modal.className = 'gallery-modal';
@@ -1072,15 +975,15 @@ function viewGalleryArt(imageName) {
             </div>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
-    
+
     // Force immediate visibility
     modal.style.opacity = '1';
     modal.style.visibility = 'visible';
     modal.style.display = 'block';
-    
+
     // Animate in
     setTimeout(() => {
         modal.classList.add('gallery-modal-open');
@@ -1102,30 +1005,30 @@ function downloadGalleryArt(imageName, artTitle) {
     const button = event.currentTarget;
     const icon = button.querySelector('i');
     const span = button.querySelector('span');
-    
+
     // Show downloading state
     button.classList.add('downloading');
     icon.className = 'fas fa-spinner fa-spin';
     span.textContent = 'Downloading...';
-    
+
     // Prevent any default behavior
     if (event) {
         event.preventDefault();
         event.stopPropagation();
         event.stopImmediatePropagation();
     }
-    
+
     const filename = `${artTitle.replace(/\s+/g, '_')}_by_DatsArt.jpg`;
-    
+
     // Method 1: Try XMLHttpRequest with responseType blob
     const xhr = new XMLHttpRequest();
     xhr.open('GET', `images/${imageName}`, true);
     xhr.responseType = 'blob';
-    
+
     xhr.onload = function() {
         if (xhr.status === 200) {
             const blob = xhr.response;
-            
+
             // Create download using URL.createObjectURL
             if (window.navigator && window.navigator.msSaveOrOpenBlob) {
                 // IE/Edge support
@@ -1134,7 +1037,7 @@ function downloadGalleryArt(imageName, artTitle) {
                 // Modern browsers
                 const url = window.URL.createObjectURL(blob);
                 const tempLink = document.createElement('a');
-                
+
                 // Make link completely invisible and non-interactive
                 tempLink.style.display = 'none';
                 tempLink.style.visibility = 'hidden';
@@ -1145,18 +1048,18 @@ function downloadGalleryArt(imageName, artTitle) {
                 tempLink.style.height = '0';
                 tempLink.style.opacity = '0';
                 tempLink.style.pointerEvents = 'none';
-                
+
                 tempLink.href = url;
                 tempLink.download = filename;
                 tempLink.target = '_self';
-                
+
                 // Add multiple download attributes for maximum compatibility
                 tempLink.setAttribute('download', filename);
                 tempLink.setAttribute('href', url);
                 tempLink.setAttribute('target', '_self');
-                
+
                 document.body.appendChild(tempLink);
-                
+
                 // Use multiple click methods
                 setTimeout(() => {
                     try {
@@ -1188,7 +1091,7 @@ function downloadGalleryArt(imageName, artTitle) {
                             }
                         }
                     }
-                    
+
                     // Clean up after delay
                     setTimeout(() => {
                         if (tempLink && tempLink.parentNode) {
@@ -1198,13 +1101,13 @@ function downloadGalleryArt(imageName, artTitle) {
                     }, 1000);
                 }, 10);
             }
-            
+
             // Show success state
             setTimeout(() => {
                 icon.className = 'fas fa-check';
                 span.textContent = 'Downloaded!';
                 createFloatingIcon(button, '📥');
-                
+
                 setTimeout(() => {
                     button.classList.remove('downloading');
                     icon.className = 'fas fa-download';
@@ -1215,10 +1118,10 @@ function downloadGalleryArt(imageName, artTitle) {
             throw new Error('Download failed');
         }
     };
-    
+
     xhr.onerror = function() {
         console.error('XHR Download failed, trying fallback');
-        
+
         // Final fallback: Force download using data URL
         const img = new Image();
         img.onload = function() {
@@ -1228,10 +1131,10 @@ function downloadGalleryArt(imageName, artTitle) {
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0);
-                
+
                 // Convert to data URL
                 const dataURL = canvas.toDataURL('image/jpeg', 0.95);
-                
+
                 // Force download with data URL
                 const link = document.createElement('a');
                 link.href = dataURL;
@@ -1245,13 +1148,13 @@ function downloadGalleryArt(imageName, artTitle) {
                 alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
             }
         };
-        
+
         img.onerror = function() {
             alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
         };
-        
+
         img.src = `images/${imageName}`;
-        
+
         // Reset button state
         setTimeout(() => {
             button.classList.remove('downloading');
@@ -1259,7 +1162,7 @@ function downloadGalleryArt(imageName, artTitle) {
             span.textContent = 'Download';
         }, 1000);
     };
-    
+
     xhr.send();
 }
 
@@ -1269,18 +1172,18 @@ function downloadFromModal(imageName) {
         event.stopPropagation();
         event.stopImmediatePropagation();
     }
-    
+
     const filename = `${imageName.replace('.jpg', '')}_by_DatsArt.jpg`;
-    
+
     // Use XMLHttpRequest for reliable download
     const xhr = new XMLHttpRequest();
     xhr.open('GET', `images/${imageName}`, true);
     xhr.responseType = 'blob';
-    
+
     xhr.onload = function() {
         if (xhr.status === 200) {
             const blob = xhr.response;
-            
+
             // Create download using URL.createObjectURL
             if (window.navigator && window.navigator.msSaveOrOpenBlob) {
                 // IE/Edge support
@@ -1289,7 +1192,7 @@ function downloadFromModal(imageName) {
                 // Modern browsers
                 const url = window.URL.createObjectURL(blob);
                 const tempLink = document.createElement('a');
-                
+
                 // Make link completely invisible
                 tempLink.style.display = 'none';
                 tempLink.style.visibility = 'hidden';
@@ -1298,14 +1201,14 @@ function downloadFromModal(imageName) {
                 tempLink.style.top = '-10000px';
                 tempLink.style.opacity = '0';
                 tempLink.style.pointerEvents = 'none';
-                
+
                 tempLink.href = url;
                 tempLink.download = filename;
                 tempLink.target = '_self';
                 tempLink.setAttribute('download', filename);
-                
+
                 document.body.appendChild(tempLink);
-                
+
                 // Multiple click methods
                 setTimeout(() => {
                     try {
@@ -1332,7 +1235,7 @@ function downloadFromModal(imageName) {
                             }
                         }
                     }
-                    
+
                     setTimeout(() => {
                         if (tempLink && tempLink.parentNode) {
                             tempLink.parentNode.removeChild(tempLink);
@@ -1343,20 +1246,20 @@ function downloadFromModal(imageName) {
             }
         }
     };
-    
+
     xhr.onerror = function() {
         // Fallback instructions
         alert(`To download the image:\n1. Right-click on the image\n2. Select "Save image as..."\n3. Save as: ${filename}`);
     };
-    
+
     xhr.send();
-    
+
     // Show success message
     const info = document.querySelector('.gallery-modal-info p');
     const originalText = info.textContent;
     info.textContent = 'Download started! Check your downloads folder.';
     info.style.color = '#87CEEB';
-    
+
     setTimeout(() => {
         info.textContent = originalText;
         info.style.color = '';
@@ -1378,7 +1281,7 @@ function shareGalleryArt(imageName) {
             const span = button.querySelector('span');
             const originalText = span.textContent;
             span.textContent = 'Link Copied!';
-            
+
             setTimeout(() => {
                 span.textContent = originalText;
             }, 2000);
@@ -1390,19 +1293,19 @@ function createFloatingIcon(button, emoji) {
     const icon = document.createElement('div');
     icon.innerHTML = emoji;
     icon.className = 'floating-icon';
-    
+
     const rect = button.getBoundingClientRect();
     icon.style.left = rect.left + rect.width / 2 + 'px';
     icon.style.top = rect.top + 'px';
-    
+
     document.body.appendChild(icon);
-    
+
     // Animate
     setTimeout(() => {
         icon.style.transform = 'translateY(-50px) scale(1.5)';
         icon.style.opacity = '0';
     }, 10);
-    
+
     // Remove after animation
     setTimeout(() => {
         if (icon.parentNode) {

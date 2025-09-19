@@ -37,23 +37,23 @@ export default async function handler(req, res) {
         // Get the absolute path to the collection directory
         const dataDir = path.join(process.cwd(), '_data');
         const requestedPath = path.join(dataDir, collection);
-        
+
         // Security: Ensure the resolved path is within the _data directory
         const resolvedPath = path.resolve(requestedPath);
         const resolvedDataDir = path.resolve(dataDir);
-        
+
         if (!resolvedPath.startsWith(resolvedDataDir + path.sep) && resolvedPath !== resolvedDataDir) {
             return res.status(403).json({ error: 'Access denied: Path outside allowed directory' });
         }
-        
+
         const collectionPath = resolvedPath;
-        
+
         // Read all files in the collection directory
         const files = await fs.readdir(collectionPath);
         const markdownFiles = files.filter(file => file.endsWith('.md'));
-        
+
         const items = [];
-        
+
         for (const file of markdownFiles) {
             try {
                 // Security: Validate filename to prevent path traversal
@@ -61,22 +61,22 @@ export default async function handler(req, res) {
                     console.warn(`Skipping potentially unsafe filename: ${file}`);
                     continue;
                 }
-                
+
                 const filePath = path.join(collectionPath, file);
-                
+
                 // Security: Double-check that resolved file path is still within collection directory
                 const resolvedFilePath = path.resolve(filePath);
                 if (!resolvedFilePath.startsWith(resolvedPath + path.sep) && resolvedFilePath !== resolvedPath) {
                     console.warn(`Skipping file outside collection directory: ${file}`);
                     continue;
                 }
-                
+
                 const fileContent = await fs.readFile(resolvedFilePath, 'utf8');
-                
+
                 // Parse front matter
                 const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---/;
                 const match = fileContent.match(frontMatterRegex);
-                
+
                 if (match) {
                     const yamlContent = match[1];
                     const data = parseYAML(yamlContent);
@@ -87,10 +87,10 @@ export default async function handler(req, res) {
                 console.error(`Error reading file ${file}:`, fileError);
             }
         }
-        
+
         // Sort by order field if available
         items.sort((a, b) => (a.order || 0) - (b.order || 0));
-        
+
         res.status(200).json(items);
     } catch (error) {
         console.error('Error reading collection:', error);
@@ -108,42 +108,42 @@ function parseYAML(yamlContent) {
     let currentKey = null;
     let currentValue = '';
     let isMultiLine = false;
-    
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const trimmed = line.trim();
-        
+
         if (trimmed && !trimmed.startsWith('#')) {
             const colonIndex = trimmed.indexOf(':');
-            
+
             if (colonIndex > -1 && !isMultiLine) {
                 // Finish previous multi-line value if exists
                 if (currentKey && currentValue) {
                     data[currentKey] = currentValue.trim();
                     currentValue = '';
                 }
-                
+
                 currentKey = trimmed.substring(0, colonIndex).trim();
                 let value = trimmed.substring(colonIndex + 1).trim();
-                
+
                 // Check for multi-line indicators
                 if (value === '|' || value === '>') {
                     isMultiLine = true;
                     currentValue = '';
                     continue;
                 }
-                
+
                 // Remove quotes
-                if ((value.startsWith('"') && value.endsWith('"')) || 
+                if ((value.startsWith('"') && value.endsWith('"')) ||
                     (value.startsWith("'") && value.endsWith("'"))) {
                     value = value.slice(1, -1);
                 }
-                
+
                 // Convert boolean and number values
                 if (value === 'true') value = true;
                 else if (value === 'false') value = false;
                 else if (!isNaN(value) && value !== '') value = Number(value);
-                
+
                 data[currentKey] = value;
                 currentKey = null;
             } else if (isMultiLine && currentKey) {
@@ -160,11 +160,11 @@ function parseYAML(yamlContent) {
             }
         }
     }
-    
+
     // Handle final multi-line value
     if (currentKey && currentValue) {
         data[currentKey] = currentValue.trim();
     }
-    
+
     return data;
 }

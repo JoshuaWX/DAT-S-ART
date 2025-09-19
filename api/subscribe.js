@@ -4,9 +4,9 @@
 export default async function handler(req, res) {
     // Only allow POST requests
     if (req.method !== 'POST') {
-        return res.status(405).json({ 
+        return res.status(405).json({
             error: 'Method not allowed',
-            message: 'Only POST requests are allowed' 
+            message: 'Only POST requests are allowed'
         });
     }
 
@@ -15,9 +15,9 @@ export default async function handler(req, res) {
 
         // Basic email validation
         if (!email || !isValidEmail(email)) {
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: 'Invalid email',
-                message: 'Please provide a valid email address' 
+                message: 'Please provide a valid email address'
             });
         }
 
@@ -28,9 +28,9 @@ export default async function handler(req, res) {
 
         if (!MAILCHIMP_API_KEY || !MAILCHIMP_AUDIENCE_ID || !MAILCHIMP_SERVER_PREFIX) {
             console.error('Missing Mailchimp configuration');
-            return res.status(500).json({ 
+            return res.status(500).json({
                 error: 'Configuration error',
-                message: 'Server configuration incomplete' 
+                message: 'Server configuration incomplete'
             });
         }
 
@@ -55,7 +55,7 @@ export default async function handler(req, res) {
             method: 'POST',
             headers: {
                 'Authorization': `Basic ${Buffer.from(`anystring:${MAILCHIMP_API_KEY}`).toString('base64')}`,
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
         });
@@ -75,14 +75,14 @@ export default async function handler(req, res) {
             }
 
             // Success
-            return res.status(200).json({ 
+            return res.status(200).json({
                 success: true,
                 message: 'Successfully subscribed to newsletter! 🎉 Welcome email is being sent - please check your Gmail inbox or Promotions tab within the next 5 minutes.',
                 subscriber_id: result.id
             });
         } else if (response.status === 400 && result.title === 'Member Exists') {
             // Email already subscribed
-            return res.status(200).json({ 
+            return res.status(200).json({
                 success: true,
                 message: 'You\'re already subscribed to our newsletter!',
                 already_subscribed: true
@@ -90,7 +90,7 @@ export default async function handler(req, res) {
         } else {
             // Mailchimp API error
             console.error('Mailchimp API error:', result);
-            return res.status(400).json({ 
+            return res.status(400).json({
                 error: 'Subscription failed',
                 message: result.detail || 'Unable to subscribe at this time'
             });
@@ -98,7 +98,7 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Subscription error:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             error: 'Internal server error',
             message: 'Something went wrong. Please try again later.'
         });
@@ -117,7 +117,7 @@ async function sendWelcomeEmail(subscriberEmail) {
     const EMAILJS_TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID || 'template_9980p4c';
     const EMAILJS_PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY || 'DuJICjw7gRklu_MSr';
     const EMAILJS_PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
-    
+
     if (!EMAILJS_PRIVATE_KEY) {
         console.log('EmailJS private key missing, skipping welcome email. Required env var: EMAILJS_PRIVATE_KEY');
         return;
@@ -144,8 +144,8 @@ async function sendWelcomeEmail(subscriberEmail) {
     };
 
     // EmailJS REST API endpoint for server-side usage
-    const emailjsUrl = `https://api.emailjs.com/api/v1.0/email/send`;
-    
+    const emailjsUrl = 'https://api.emailjs.com/api/v1.0/email/send';
+
     const requestData = {
         service_id: EMAILJS_SERVICE_ID,
         template_id: EMAILJS_TEMPLATE_ID,
@@ -156,17 +156,17 @@ async function sendWelcomeEmail(subscriberEmail) {
 
     try {
         console.log('EmailJS request data:', JSON.stringify(requestData, null, 2));
-        
+
         const response = await fetch(emailjsUrl, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(requestData)
         });
 
         console.log('EmailJS response status:', response.status);
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             console.error('EmailJS API error response:', errorText);

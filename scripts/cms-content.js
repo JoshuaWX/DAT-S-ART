@@ -41,7 +41,7 @@ class CMSContentManager {
     async loadGalleryContentFallback() {
         const galleryFiles = [
             'digital-vision.md',
-            'neon-dreams.md', 
+            'neon-dreams.md',
             'tech-fusion.md',
             'pixel-paradise.md'
         ];
@@ -116,7 +116,7 @@ class CMSContentManager {
     parseMarkdownFrontMatter(content) {
         const frontMatterRegex = /^---\s*\n([\s\S]*?)\n---/;
         const match = content.match(frontMatterRegex);
-        
+
         if (match) {
             return this.parseYAML(match[1]);
         }
@@ -130,42 +130,42 @@ class CMSContentManager {
         let currentKey = null;
         let currentValue = '';
         let isMultiLine = false;
-        
+
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
             const trimmed = line.trim();
-            
+
             if (trimmed && !trimmed.startsWith('#')) {
                 const colonIndex = trimmed.indexOf(':');
-                
+
                 if (colonIndex > -1 && !isMultiLine) {
                     // Finish previous multi-line value if exists
                     if (currentKey && currentValue) {
                         data[currentKey] = currentValue.trim();
                         currentValue = '';
                     }
-                    
+
                     currentKey = trimmed.substring(0, colonIndex).trim();
                     let value = trimmed.substring(colonIndex + 1).trim();
-                    
+
                     // Check for multi-line indicators
                     if (value === '|' || value === '>') {
                         isMultiLine = true;
                         currentValue = '';
                         continue;
                     }
-                    
+
                     // Remove quotes
-                    if ((value.startsWith('"') && value.endsWith('"')) || 
+                    if ((value.startsWith('"') && value.endsWith('"')) ||
                         (value.startsWith("'") && value.endsWith("'"))) {
                         value = value.slice(1, -1);
                     }
-                    
+
                     // Convert boolean and number values
                     if (value === 'true') value = true;
                     else if (value === 'false') value = false;
                     else if (!isNaN(value) && value !== '') value = Number(value);
-                    
+
                     data[currentKey] = value;
                     currentKey = null;
                 } else if (isMultiLine && currentKey) {
@@ -182,12 +182,12 @@ class CMSContentManager {
                 }
             }
         }
-        
+
         // Handle final multi-line value
         if (currentKey && currentValue) {
             data[currentKey] = currentValue.trim();
         }
-        
+
         return data;
     }
 
@@ -201,9 +201,9 @@ class CMSContentManager {
         this.galleryData.forEach((item) => {
             const galleryItem = document.createElement('div');
             galleryItem.className = 'gallery-item';
-            
+
             const imageName = item.image ? item.image.split('/').pop() : 'placeholder.jpg';
-            
+
             galleryItem.innerHTML = `
                 <div class="gallery-image">
                     <img src="${item.image || '/images/placeholder.jpg'}" alt="${item.title || 'Gallery Artwork'}" class="gallery-img" loading="lazy">
@@ -228,7 +228,7 @@ class CMSContentManager {
                     </div>
                 </div>
             `;
-            
+
             galleryGrid.appendChild(galleryItem);
         });
     }
@@ -245,7 +245,7 @@ class CMSContentManager {
 
             const featuredItem = document.createElement('div');
             featuredItem.className = 'featured-item';
-            
+
             featuredItem.innerHTML = `
                 <div class="featured-image">
                     <img src="${item.image || '/images/placeholder.jpg'}" alt="${item.title || 'Featured Artwork'}" class="art-image">
@@ -271,7 +271,7 @@ class CMSContentManager {
                     </div>
                 </div>
             `;
-            
+
             featuredGrid.appendChild(featuredItem);
         });
     }
@@ -305,12 +305,12 @@ class CMSContentManager {
 // Initialize CMS content manager when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const cmsManager = new CMSContentManager();
-    
+
     // Load content after other scripts have initialized
     setTimeout(() => {
         cmsManager.loadContent();
     }, 1000);
-    
+
     // Make it globally available for debugging
     window.cmsManager = cmsManager;
 });
