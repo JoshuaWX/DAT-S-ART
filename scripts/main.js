@@ -690,27 +690,27 @@ async function handleSubscribeSubmit(e) {
     submitBtn.disabled = true;
 
     try {
-        // Prepare EmailJS template parameters
+        // Prepare EmailJS template parameters for welcome email to subscriber
         const templateParams = {
-            from_email: email,
-            to_email: 'datsartinfo@gmail.com', // Your email
-            subject: 'New Newsletter Subscription',
-            message: `New newsletter subscription from: ${email}`,
-            submission_date: new Date().toLocaleDateString(),
-            subscription_type: 'Newsletter'
+            to_email: email, // Send TO the subscriber
+            subscriber_email: email,
+            subscriber_name: email.split('@')[0], // Use email prefix as name fallback
+            subscription_date: new Date().toLocaleDateString(),
+            from_name: 'Dat\'s Art Team',
+            reply_to: 'datsartinfo@gmail.com'
         };
 
-        // Send email using EmailJS (use same service but different template for subscriptions)
-        console.log('Sending subscription notification with params:', templateParams);
+        // Send welcome email to subscriber using subscription template
+        console.log('Sending welcome email to subscriber with params:', templateParams);
 
-        // Use subscription template (you may need to create this template in EmailJS)
+        // Use the correct subscription template for welcome emails
         const response = await emailjs.send(
-            'service_vbar1qp',    // Your service ID (same as contact form)
-            'template_vuxvmlk',   // Using same template as contact form for now
+            'service_vbar1qp',    // Your service ID
+            'template_9980p4c',   // Your subscription welcome template ID
             templateParams
         );
 
-        console.log('Subscription sent successfully:', response);
+        console.log('Welcome email sent successfully to subscriber:', response);
         showSubscribeMessage('🎨 Welcome to the creative loop! You\'ll receive updates about new artworks and tutorials.', 'success');
         updateSubscriberCount();
 
